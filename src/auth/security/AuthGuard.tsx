@@ -10,7 +10,7 @@ interface DecodedToken {
   exp: number;
 }
 
-const AuthGuard = ({ Component }: { Component: ComponentType<any> }) => {
+const AuthGuard = ({ Component }: { Component: ComponentType }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.auth.token);

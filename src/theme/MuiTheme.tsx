@@ -2,29 +2,26 @@ import { createTheme } from "@mui/material/styles";
 import React from "react";
 import { ThemeProvider } from "@mui/material/styles";
 const themeOptions = createTheme({
-  palette: {
-    mode: "dark",
-    primary: {
-      main: "#fff",
-    },
-    secondary: {
-      main: "#f50057",
-    },
+  typography: {
+    fontFamily: 'Montserrat, sans-serif',
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          backgroundColor: "#3880ff",
-          borderRadius: 10,
-          color: "#fff",
-          "&:hover": {
-            backgroundColor: "#2d67d4",
-          },
+          textTransform: 'none',
+        },
+      },
+    },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontFamily: 'Montserrat, sans-serif',
         },
       },
     },
   },
+
 });
 
 const MuiThemeProvider = ({ children }: { children: React.ReactNode }) => {

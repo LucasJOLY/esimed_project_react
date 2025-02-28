@@ -1,0 +1,18 @@
+{
+  "app.title": "CaDitKoi",
+  "auth.login": "Se connecter",
+  "auth.register": "S'inscrire",
+  "auth.logout": "Se déconnecter",
+  "auth.email": "Email",
+  "auth.password": "Mot de passe",
+  "auth.confirmPassword": "Confirmer le mot de passe",
+  "auth.username": "Nom d'utilisateur",
+  "auth.alreadyRegistered": "Déjà inscrit ? Se connecter",
+  "auth.notRegistered": "Pas encore inscrit ? S'inscrire",
+  "auth.passwordStrength.weak": "Faible",
+  "auth.passwordStrength.medium": "Moyen",
+  "auth.passwordStrength.strong": "Fort",
+  "auth.passwordStrength.label": "Force du mot de passe: {strength}",
+  "auth.fillAllFields": "Veuillez remplir tous les champs",
+  "auth.passwordNotMatch": "Les mots de passe ne correspondent pas"
+}
