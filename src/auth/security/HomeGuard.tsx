@@ -1,31 +1,37 @@
-import { useEffect, ComponentType } from "react";
+import { ComponentType, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router";
+import { AppDispatch, RootState } from "../../app/store";
 import { jwtDecode } from "jwt-decode";
 import { getMe } from "../store/slice";
-import { RootState, AppDispatch } from "../../app/store";
+
+interface HomeGuardProps {
+  AuthComponent: ComponentType;
+  NonAuthComponent: ComponentType;
+}
 
 interface DecodedToken {
   sub: string;
 }
 
-const AuthGuard = ({ Component }: { Component: ComponentType }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+const HomeGuard = ({ AuthComponent, NonAuthComponent }: HomeGuardProps) => {
   const token = useSelector((state: RootState) => state.auth.token);
   const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const verifyAuth = async () => {
       if (!token) {
-        navigate("/login");
+        setLoading(false);
         return;
       }
+
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
         const userId: number = Number(decodedToken?.sub);
+
         if (!userId) {
-          navigate("/login");
+          setLoading(false);
           return;
         }
 
@@ -33,22 +39,27 @@ const AuthGuard = ({ Component }: { Component: ComponentType }) => {
           try {
             const response = await dispatch(getMe(userId));
             if (!response) {
-              navigate("/login");
+              setLoading(false);
+              return;
             }
           } catch {
-            navigate("/login");
+            setLoading(false);
+            return;
           }
         }
       } catch (error) {
-        console.log(error);
-        navigate("/login");
+        setLoading(false);
+        console.error(error);
+        return;
       }
+      setLoading(false);
     };
 
     verifyAuth();
-  }, [token, user]);
+  }, [token, user, dispatch]);
 
-  return user ? <Component /> : null;
+  if (loading) return null;
+  return user ? <AuthComponent /> : <NonAuthComponent />;
 };
 
-export default AuthGuard;
+export default HomeGuard;

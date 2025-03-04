@@ -1,7 +1,6 @@
 import './App.css'
 import { Router } from './Router'
 import MuiThemeProvider from './theme/MuiTheme'
-import Header from './components/header/Header';
 import { useSelector } from 'react-redux';
 import { RootState } from './app/store';
 import { ToastContainer } from 'react-toastify';
@@ -12,9 +11,8 @@ function App() {
 
         <MuiThemeProvider>
           <ToastContainer />
-        <Header />
-        <Router />
-    </MuiThemeProvider>
+          <Router />
+        </MuiThemeProvider>
 
     </div>
   )

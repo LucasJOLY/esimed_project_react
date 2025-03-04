@@ -1,5 +1,5 @@
 import axios from "axios";
-const token = localStorage.getItem("token");
+const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 export const configAPI = axios.create({
   baseURL: "http://localhost:3000/",
   headers: {
