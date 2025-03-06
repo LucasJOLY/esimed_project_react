@@ -18,7 +18,12 @@ import { getIntl } from "../../language/config/translation";
 const addPost = createAsyncThunk(
   "posts/createPost",
   async (
-    { content, userId, imageUrl }: { content: string; userId: number; imageUrl?: string },
+    {
+      content,
+      userId,
+      imageUrl,
+      mentions,
+    }: { content: string; userId: number; imageUrl?: string; mentions?: number[] },
     { rejectWithValue }
   ) => {
     try {
@@ -28,7 +33,7 @@ const addPost = createAsyncThunk(
       }
       const timestamp = Date.now();
       const hashtags = extractHashtags(content);
-      const response = await createPost(content, userId, timestamp, imageUrl, hashtags);
+      const response = await createPost(content, userId, timestamp, imageUrl, hashtags, mentions);
       return response.data;
     } catch (error) {
       return rejectWithValue(error);
@@ -42,16 +47,18 @@ const editPost = createAsyncThunk(
     id,
     content,
     imageUrl,
+    mentions,
   }: {
     id: number;
     content: string;
     userId: number;
     imageUrl?: string;
+    mentions?: number[];
   }) => {
     const timestamp = Date.now();
     const hashtags = extractHashtags(content);
-    const response = await updatePost(id, content, timestamp, imageUrl, hashtags);
-    return response;
+    const response = await updatePost(id, content, timestamp, imageUrl, hashtags, mentions);
+    return response.data;
   }
 );
 

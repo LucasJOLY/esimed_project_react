@@ -4,13 +4,15 @@ import { Post, Repost, Like } from "../type";
 import { Follow } from "../../profil/type";
 import { User } from "../../auth/types";
 import { getIntl } from "../../language/config/translation";
+import { createNotification } from "../../notifications/api/notificationAPI";
 
 export const createPost = async (
   content: string,
   userId: number,
   created_at: number,
   imageUrl?: string,
-  hashtags: string[] = []
+  hashtags: string[] = [],
+  mentions: number[] = []
 ) => {
   const response = await configAPI.post("/660/posts", {
     content,
@@ -18,7 +20,18 @@ export const createPost = async (
     created_at,
     imageUrl,
     hashtags: hashtags || [],
+    mentions: mentions || [],
   });
+
+  // Créer des notifications pour les mentions
+  if (mentions && mentions.length > 0) {
+    for (const mentionedUserId of mentions) {
+      if (mentionedUserId !== userId) {
+        await createNotification(mentionedUserId, userId, "mention", response.data.id);
+      }
+    }
+  }
+
   return response.data;
 };
 
@@ -27,6 +40,7 @@ export const getPost = async (postId: number): Promise<Post> => {
     `/660/posts/${postId}?_embed=likes&_embed=comments&_embed=reposts&_expand=user`
   );
   response.data.hashtags = response.data.hashtags || [];
+  response.data.mentions = response.data.mentions || [];
   return response.data;
 };
 
@@ -40,15 +54,17 @@ export const updatePost = async (
   content: string,
   created_at: number,
   imageUrl?: string,
-  hashtags: string[] = []
+  hashtags: string[] = [],
+  mentions: number[] = []
 ) => {
   const response = await configAPI.patch(`/660/posts/${id}`, {
     content,
     created_at,
     imageUrl,
     hashtags: hashtags || [],
+    mentions: mentions || [],
   });
-  return response.data;
+  return response;
 };
 
 export const getUserPosts = async (

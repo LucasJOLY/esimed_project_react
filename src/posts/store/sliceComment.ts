@@ -22,7 +22,14 @@ const addComment = createAsyncThunk(
       user,
       content,
       imageUrl,
-    }: { postId: number; user: User; content: string; imageUrl?: string },
+      mentions,
+    }: {
+      postId: number;
+      user: User;
+      content: string;
+      imageUrl?: string;
+      mentions?: number[];
+    },
     { rejectWithValue }
   ) => {
     try {
@@ -35,7 +42,7 @@ const addComment = createAsyncThunk(
         return rejectWithValue("Content is empty");
       }
       const timestamp = Date.now();
-      const response = await createComment(postId, user, content, timestamp, imageUrl);
+      const response = await createComment(postId, user, content, timestamp, imageUrl, mentions);
 
       const post = await getPost(postId);
       if (post.userId !== user.id) {

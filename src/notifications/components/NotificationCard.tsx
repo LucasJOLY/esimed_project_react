@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from "../../app/store";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { FormattedMessage } from "react-intl";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { FaComment } from "react-icons/fa";
@@ -57,6 +57,10 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
         return <FaHeart size={24} className="text-red-500" />;
       case "comment":
         return <FaComment size={24} className="text-[#1DA1F2]" />;
+      case "mention":
+        return <FaUser size={24} className="text-[#1DA1F2]" />;
+      case "mention_comment":
+        return <FaComment size={24} className="text-[#1DA1F2]" />;
       default:
         return null;
     }
@@ -70,6 +74,10 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
         return "notifications.likeMessage";
       case "comment":
         return "notifications.commentMessage";
+      case "mention_comment":
+        return "notifications.mentionCommentMessage";
+      case "mention":
+        return "notifications.mentionMessage";
       default:
         return "notifications.defaultMessage";
     }
@@ -83,6 +91,8 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
         break;
       case "like":
       case "comment":
+      case "mention_comment":
+      case "mention":
         navigate(`/feed/${notification.postId}`);
         break;
       default:

@@ -7,12 +7,15 @@ import { addComment } from "../store/sliceComment";
 import { User } from "../../auth/types";
 import GifPicker from "../../components/GifPicker";
 import SelectedImage from "../../components/SelectedImage";
+import MentionableTextarea from "../../components/MentionableTextarea/MentionableTextarea";
+import EmojiPicker from "../../components/EmojiPicker/EmojiPicker";
 
 const AddComment = ({ postId }: { postId: number }) => {
   const dispatch = useDispatch<AppDispatch>();
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | undefined>();
+  const [mentions, setMentions] = useState<number[]>([]);
   const user = useSelector((state: RootState) => state.auth.user);
   const intl = useIntl();
 
@@ -24,14 +27,20 @@ const AddComment = ({ postId }: { postId: number }) => {
         user: user ?? ({} as User),
         content,
         imageUrl,
+        mentions,
       })
     );
     setContent("");
     setImageUrl(undefined);
+    setMentions([]);
   };
 
   const handleGifSelect = (url: string) => {
     setImageUrl(url);
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setContent((prevContent) => prevContent + emoji);
   };
 
   return (
@@ -44,20 +53,23 @@ const AddComment = ({ postId }: { postId: number }) => {
             alt="Selected GIF"
           />
         )}
-        <textarea
+        <MentionableTextarea
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={setContent}
+          onMentionsChange={setMentions}
+          isDark={isDark}
           placeholder={intl.formatMessage({ id: "addComment.placeholder" })}
-          className={`w-full h-48 p-4 resize-none outline-none rounded-lg ${
-            isDark ? "bg-[#202327] text-white" : "bg-[#f7f9f9] text-black"
-          }`}
-          style={{
-            fontFamily: "Montserrat",
-          }}
         />
       </form>
       <div className={`flex justify-between items-center px-4 mt-2`}>
-        {!imageUrl && <GifPicker onSelect={handleGifSelect} isDark={isDark} />}
+        <div className="flex gap-2">
+          {!imageUrl && (
+            <>
+              <GifPicker onSelect={handleGifSelect} isDark={isDark} />
+              <EmojiPicker onEmojiSelect={handleEmojiSelect} isDark={isDark} />
+            </>
+          )}
+        </div>
 
         <PrimaryButton onClick={(e: any) => handleSubmit(e)}>
           <FormattedMessage id="addComment.addComment" />

@@ -25,7 +25,6 @@ const CommentCard = ({ comment }: CommentCardProps) => {
   const formattedDate = format(new Date(comment.created_at), "dd/MM/yyyy HH:mm", {
     locale: fr,
   });
-  const [showFullContent, setShowFullContent] = useState(false);
 
   // Popover state
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -76,7 +75,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
                   }}
                   onConfirm={handleConfirmDelete}
                   isDark={isDark}
-                  formattedTitle={<FormattedMessage id="post.deleteConfirmationComment" />}
+                  formattedTitle={<FormattedMessage id="comment.deleteConfirmationMessage" />}
                 />
               </>
             )}

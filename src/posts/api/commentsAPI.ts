@@ -3,13 +3,15 @@ import { configAPI } from "../../config/apiConfig";
 import { Comment, CommentLikes } from "../type";
 import { User } from "../../auth/types";
 import { getIntl } from "../../language/config/translation";
+import { createNotification } from "../../notifications/api/notificationAPI";
 
 export const createComment = async (
   postId: number,
   user: User,
   content: string,
   created_at: number,
-  imageUrl?: string
+  imageUrl?: string,
+  mentions: number[] = []
 ): Promise<Comment> => {
   try {
     const response = await configAPI.post(`/660/comments`, {
@@ -18,10 +20,21 @@ export const createComment = async (
       content,
       created_at,
       imageUrl,
+      mentions: mentions || [],
     });
     let comment: Comment = response.data;
     comment.user = user;
     comment.commentLikes = [];
+
+    // Créer des notifications pour les mentions
+    if (mentions && mentions.length > 0) {
+      for (const mentionedUserId of mentions) {
+        if (mentionedUserId !== user.id) {
+          await createNotification(mentionedUserId, user.id, "mention_comment", postId);
+        }
+      }
+    }
+
     return comment;
   } catch (error) {
     toast.error(getIntl("fr").formatMessage({ id: "toast.likeCreationError" }));

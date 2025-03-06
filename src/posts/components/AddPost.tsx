@@ -9,6 +9,8 @@ import PrimaryButton from "../../components/buttons/PrimaryButton";
 import SecondaryButton from "../../components/buttons/SecondayButton";
 import GifPicker from "../../components/GifPicker";
 import SelectedImage from "../../components/SelectedImage";
+import MentionableTextarea from "../../components/MentionableTextarea/MentionableTextarea";
+import EmojiPicker from "../../components/EmojiPicker/EmojiPicker";
 
 const AddPost = ({ edit }: { edit?: boolean }) => {
   const dispatchNavigate = useDispatchNavigate();
@@ -17,6 +19,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | undefined>();
+  const [mentions, setMentions] = useState<number[]>([]);
   const user = useSelector((state: RootState) => state.auth.user);
   const post = useSelector((state: RootState) => state.posts.post);
   const intl = useIntl();
@@ -32,6 +35,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
     if (post) {
       setContent(post.content);
       setImageUrl(post.imageUrl);
+      setMentions(post.mentions || []);
     }
   }, [post]);
 
@@ -50,6 +54,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
           content,
           userId: user?.id || 0,
           imageUrl,
+          mentions,
         }),
         "/"
       );
@@ -59,6 +64,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
           content,
           userId: user?.id || 0,
           imageUrl,
+          mentions,
         }),
         "/"
       );
@@ -67,6 +73,10 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
 
   const handleGifSelect = (url: string) => {
     setImageUrl(url);
+  };
+
+  const handleEmojiSelect = (emoji: string) => {
+    setContent((prevContent) => prevContent + emoji);
   };
 
   return (
@@ -91,21 +101,20 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
             alt="Selected GIF"
           />
         )}
-        <textarea
+        <MentionableTextarea
           value={content}
-          onChange={(e) => setContent(e.target.value)}
+          onChange={setContent}
+          onMentionsChange={setMentions}
+          isDark={isDark}
           placeholder={intl.formatMessage({ id: "addPost.placeholder" })}
-          className={`w-full h-48 p-4 resize-none outline-none rounded-lg ${
-            isDark
-              ? "bg-[#16181c] text-white border border-gray-800"
-              : "bg-white text-black border border-gray-200"
-          }`}
-          style={{
-            fontFamily: "Montserrat",
-          }}
         />
         <div className="flex items-center gap-2 mt-2">
-          {!imageUrl && <GifPicker onSelect={handleGifSelect} isDark={isDark} />}
+          {!imageUrl && (
+            <>
+              <GifPicker onSelect={handleGifSelect} isDark={isDark} />
+              <EmojiPicker onEmojiSelect={handleEmojiSelect} isDark={isDark} />
+            </>
+          )}
         </div>
       </form>
     </div>

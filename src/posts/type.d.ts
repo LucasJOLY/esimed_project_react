@@ -18,6 +18,7 @@ type Post = {
   repostedBy: User;
   imageUrl?: string;
   hashtags: string[];
+  mentions: number[];
 };
 
 type Comment = {
@@ -29,6 +30,7 @@ type Comment = {
   user: User;
   commentLikes: CommentLikes[];
   imageUrl?: string;
+  mentions: number[];
 };
 
 type CommentLikes = {
