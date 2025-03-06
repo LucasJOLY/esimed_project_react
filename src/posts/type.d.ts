@@ -16,6 +16,8 @@ type Post = {
   reposts: Repost[];
   reposted: boolean;
   repostedBy: User;
+  imageUrl?: string;
+  hashtags: string[];
 };
 
 type Comment = {
@@ -26,6 +28,7 @@ type Comment = {
   content: string;
   user: User;
   commentLikes: CommentLikes[];
+  imageUrl?: string;
 };
 
 type CommentLikes = {

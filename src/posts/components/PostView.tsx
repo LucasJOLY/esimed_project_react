@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
 import { useParams } from "react-router";
-import { getPostById } from "../store/slicePost";
+import { clearPost, getPostById } from "../store/slicePost";
 import { getCommentsByPostId } from "../store/sliceComment";
 import PostCard from "./postCard/PostCard";
 import CommentCard from "./commentCard/CommentCard";
@@ -27,6 +27,12 @@ function PostView() {
       })
     );
   }, [id]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearPost());
+    };
+  }, []);
 
   const [filterByLikes, setFilterByLikes] = useState(false);
   const [filterByTime, setFilterByTime] = useState(true);
@@ -54,14 +60,8 @@ function PostView() {
           isDark ? "border-gray-800" : "border-gray-200"
         }`}
       >
-        <Typography
-          variant="h6"
-          className={` ${isDark ? "text-white" : "text-black"}`}
-        >
-          <FormattedMessage
-            id="post.comments"
-            values={{ count: comments.length }}
-          />
+        <Typography variant="h6" className={` ${isDark ? "text-white" : "text-black"}`}>
+          <FormattedMessage id="post.comments" values={{ count: comments.length }} />
         </Typography>
         <FilterComponent
           filterByLikes={filterByLikes}

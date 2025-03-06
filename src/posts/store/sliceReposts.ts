@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createRepost, deleteRepost } from "../api/repostsAPI";
 
 const addRepost = createAsyncThunk(
-  "likes/addLike",
+  "reposts/addRepost",
   async ({ postId, userId }: { postId: number; userId: number }) => {
     const timestamp = Date.now();
     const response = await createRepost(postId, userId, timestamp);
@@ -11,7 +11,7 @@ const addRepost = createAsyncThunk(
 );
 
 const destroyRepost = createAsyncThunk(
-  "likes/destroyLike",
+  "reposts/destroyRepost",
   async ({ postId, userId }: { postId: number; userId: number }) => {
     const response = await deleteRepost(postId, userId);
     return response;
@@ -19,17 +19,31 @@ const destroyRepost = createAsyncThunk(
 );
 
 type RepostState = {
-  loading: boolean;
+  repostLoading: "idle" | "loading" | "succeeded" | "failed";
 };
 
 const initialState: RepostState = {
-  loading: false,
+  repostLoading: "idle",
 };
 
 const repostSlice = createSlice({
   name: "reposts",
   initialState,
   reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(addRepost.pending, (state) => {
+      state.repostLoading = "loading";
+    });
+    builder.addCase(addRepost.fulfilled, (state) => {
+      state.repostLoading = "succeeded";
+    });
+    builder.addCase(destroyRepost.pending, (state) => {
+      state.repostLoading = "loading";
+    });
+    builder.addCase(destroyRepost.fulfilled, (state) => {
+      state.repostLoading = "succeeded";
+    });
+  },
 });
 
 export { addRepost, destroyRepost };

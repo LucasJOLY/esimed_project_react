@@ -2,27 +2,30 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../app/store";
 import { useNavigate, useLocation } from "react-router";
 import { FormattedMessage } from "react-intl";
-import { IconButton, Typography } from "@mui/material";
+import { IconButton, Typography, Badge } from "@mui/material";
 import { AiFillHome } from "react-icons/ai";
-import { IoNotifications } from "react-icons/io5";
+import { IoNotifications, IoNotificationsSharp } from "react-icons/io5";
 import { BsPersonFill } from "react-icons/bs";
-import { BiMessageSquareDots } from "react-icons/bi";
+import { RiMessage2Fill } from "react-icons/ri";
+import { FaSearch } from "react-icons/fa";
 
 const Navbar = () => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);
+  const { notifications } = useSelector((state: RootState) => state.notifications);
   const navigate = useNavigate();
   const location = useLocation();
-  const user = useSelector((state: RootState) => state.auth.user);
   const isActive = (path: string) => location.pathname === path;
+  const unreadCount = notifications.filter((n) => !n.read).length;
 
   const navItems = [
     { path: "/", icon: AiFillHome, label: "nav.home" },
     {
       path: "/notifications",
-      icon: IoNotifications,
+      icon: unreadCount > 0 ? IoNotificationsSharp : IoNotifications,
       label: "nav.notifications",
+      badge: unreadCount,
     },
-    { path: "/messages", icon: BiMessageSquareDots, label: "nav.messages" },
+    { path: `/search`, icon: FaSearch, label: "nav.search" },
     { path: `/profile`, icon: BsPersonFill, label: "nav.profile" },
   ];
 
@@ -38,18 +41,19 @@ const Navbar = () => {
             <IconButton
               key={item.path}
               onClick={() => {
-                console.log(item.path);
                 navigate(item.path);
               }}
               sx={{
-                color: isActive(item.path)
-                  ? "#1d9bf0"
-                  : isDark
-                  ? "white"
-                  : "black",
+                color: isActive(item.path) ? "#1d9bf0" : isDark ? "white" : "black",
               }}
             >
-              <item.icon size={24} />
+              {item.badge ? (
+                <Badge badgeContent={item.badge} color="error">
+                  <item.icon size={24} />
+                </Badge>
+              ) : (
+                <item.icon size={24} />
+              )}
             </IconButton>
           ))}
         </div>
@@ -75,7 +79,13 @@ const Navbar = () => {
                 : "text-black"
             }`}
           >
-            <item.icon size={24} />
+            {item.badge ? (
+              <Badge badgeContent={item.badge} color="error">
+                <item.icon size={24} />
+              </Badge>
+            ) : (
+              <item.icon size={24} />
+            )}
             <Typography className="text-lg font-medium">
               <FormattedMessage id={item.label} />
             </Typography>

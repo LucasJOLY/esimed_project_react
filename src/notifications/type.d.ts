@@ -3,11 +3,11 @@ type Notification = {
   id: number;
   userId: number;
   senderId: number;
+  type: string;
   user: User;
   sender: User;
-  route: string;
+  postId: number;
   created_at: number;
-  message: string;
   read: boolean;
 };
 

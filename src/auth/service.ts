@@ -1,6 +1,7 @@
 import { PasswordStrength } from "./types";
 import { toast } from "react-toastify";
 import { checkEmail } from "./api/authAPI";
+import { getIntl } from "../language/config/translation";
 
 export const calculatePasswordStrength = (pass: string): PasswordStrength => {
   let score = 0;
@@ -20,21 +21,29 @@ export const calculatePasswordStrength = (pass: string): PasswordStrength => {
   return strengthMap[score];
 };
 
-export const checkPassword = (password: string) => {
+export const validatePassword = (password: string) => {
   const strength = calculatePasswordStrength(password);
   if (strength.score < 66) {
-    toast.error("Cette password est trop faible");
+    toast.error(getIntl("fr").formatMessage({ id: "toast.passwordTooWeak" }));
     throw new Error();
   }
-  return true;
 };
 
-export const isEmailAlreadyUsed = async (email: string): Promise<boolean> => {
-  const response = await checkEmail(email);
-  console.log(response);
-  if (response && response?.email == email) {
-    toast.error("Cette email est déjà utilisé");
+export const validateUsername = (username: string) => {
+  if (username.length < 3) {
+    toast.error(getIntl("fr").formatMessage({ id: "toast.usernameTooShort" }));
     throw new Error();
   }
-  return true;
+  if (username.length > 20) {
+    toast.error(getIntl("fr").formatMessage({ id: "toast.usernameTooLong" }));
+    throw new Error();
+  }
+};
+
+export const validateEmail = async (email: string) => {
+  const response = await checkEmail(email);
+  if (response && response?.email == email) {
+    toast.error(getIntl("fr").formatMessage({ id: "toast.emailAlreadyUsed" }));
+    throw new Error();
+  }
 };

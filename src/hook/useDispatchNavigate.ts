@@ -10,17 +10,12 @@ const useDispatchNavigate = () => {
     try {
       const result = await dispatch(action);
 
-      if (
-        (!result.meta && result) ||
-        result.meta?.requestStatus === "fulfilled"
-      ) {
+      if ((!result.meta && result) || result.meta?.requestStatus === "fulfilled") {
         if (route) {
           navigate(route);
         }
       }
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   return dispatchNavigate;

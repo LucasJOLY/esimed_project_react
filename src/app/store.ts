@@ -7,6 +7,10 @@ import likesReducer from "../posts/store/sliceLikes";
 import repostsReducer from "../posts/store/sliceReposts";
 import commentsReducer from "../posts/store/sliceComment";
 import profilReducer from "../profil/store/sliceProfil";
+import gifReducer from "../gif/store/slices/gifSlice";
+import notificationReducer from "../notifications/store/sliceNotifications";
+import searchReducer from "../search/store/sliceSearch";
+
 export const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -17,6 +21,9 @@ export const store = configureStore({
     reposts: repostsReducer,
     comments: commentsReducer,
     profil: profilReducer,
+    gifs: gifReducer,
+    notifications: notificationReducer,
+    search: searchReducer,
   },
 });
 

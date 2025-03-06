@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Tabs, Tab, Box, Button } from "@mui/material";
+import { Tabs, Tab, Box } from "@mui/material";
 import ForYouFeed from "./components/ForYouFeed";
 import FollowFeed from "./components/FollowFeed";
 import { FormattedMessage } from "react-intl";
@@ -19,12 +19,7 @@ function Feed() {
 
   return (
     <Box sx={{ position: "relative", minHeight: "100%" }}>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        variant="fullWidth"
-        indicatorColor="secondary"
-      >
+      <Tabs value={value} onChange={handleChange} variant="fullWidth" indicatorColor="secondary">
         <Tab
           label={<FormattedMessage id="feed.forYou" />}
           sx={{

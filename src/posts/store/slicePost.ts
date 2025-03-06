@@ -11,38 +11,53 @@ import {
   getLikedPosts,
 } from "../api/postAPI";
 import { User } from "../../auth/types";
+import { isContentValid, extractHashtags } from "../components/service/createService";
+import { toast } from "react-toastify";
+import { getIntl } from "../../language/config/translation";
 
 const addPost = createAsyncThunk(
   "posts/createPost",
-  async ({ content, userId }: { content: string; userId: number }) => {
+  async (
+    { content, userId, imageUrl }: { content: string; userId: number; imageUrl?: string },
+    { rejectWithValue }
+  ) => {
     try {
+      if (!isContentValid(content)) {
+        toast.error(getIntl("fr").formatMessage({ id: "toast.contentTooLong" }));
+        return rejectWithValue("Content is too long");
+      }
       const timestamp = Date.now();
-      const response = await createPost(content, userId, timestamp);
+      const hashtags = extractHashtags(content);
+      const response = await createPost(content, userId, timestamp, imageUrl, hashtags);
       return response.data;
     } catch (error) {
-      console.log(error);
+      return rejectWithValue(error);
     }
   }
 );
 
 const editPost = createAsyncThunk(
   "posts/updatePost",
-  async ({ id, content }: { id: number; content: string; userId: number }) => {
+  async ({
+    id,
+    content,
+    imageUrl,
+  }: {
+    id: number;
+    content: string;
+    userId: number;
+    imageUrl?: string;
+  }) => {
     const timestamp = Date.now();
-    const response = await updatePost(id, content, timestamp);
+    const hashtags = extractHashtags(content);
+    const response = await updatePost(id, content, timestamp, imageUrl, hashtags);
     return response;
   }
 );
 
 const getForYouFeed = createAsyncThunk(
   "posts/getForYouFeed",
-  async ({
-    byLikes,
-    byTimeDesc,
-  }: {
-    byLikes: boolean;
-    byTimeDesc: boolean;
-  }) => {
+  async ({ byLikes, byTimeDesc }: { byLikes: boolean; byTimeDesc: boolean }) => {
     const response = await getPosts(byLikes, byTimeDesc);
     return response;
   }
@@ -82,15 +97,7 @@ const destroyPost = createAsyncThunk(
 
 const getPostsByUserId = createAsyncThunk(
   "posts/getPostsByUserId",
-  async ({
-    user,
-    byLikes,
-    byTimeDesc,
-  }: {
-    user: User;
-    byLikes: boolean;
-    byTimeDesc: boolean;
-  }) => {
+  async ({ user, byLikes, byTimeDesc }: { user: User; byLikes: boolean; byTimeDesc: boolean }) => {
     const response = await getUserPosts(user, byLikes, byTimeDesc);
     return response;
   }
@@ -98,15 +105,7 @@ const getPostsByUserId = createAsyncThunk(
 
 const getLikedPostsByUserId = createAsyncThunk(
   "posts/getLikedPostsByUserId",
-  async ({
-    user,
-    byLikes,
-    byTimeDesc,
-  }: {
-    user: User;
-    byLikes: boolean;
-    byTimeDesc: boolean;
-  }) => {
+  async ({ user, byLikes, byTimeDesc }: { user: User; byLikes: boolean; byTimeDesc: boolean }) => {
     const response = await getLikedPosts(user.id, byLikes, byTimeDesc);
     return response;
   }
@@ -130,6 +129,10 @@ const postSlice = createSlice({
   reducers: {
     clearPosts: (state) => {
       state.posts = [];
+      state.loading = false;
+    },
+    clearPost: (state) => {
+      state.post = null;
       state.loading = false;
     },
   },
@@ -162,9 +165,7 @@ const postSlice = createSlice({
       state.loading = false;
     });
     builder.addCase(destroyPost.fulfilled, (state, action) => {
-      state.posts = state.posts.filter(
-        (post) => post.id !== action.meta.arg.postId
-      );
+      state.posts = state.posts.filter((post) => post.id !== action.meta.arg.postId);
       state.loading = false;
     });
     builder.addCase(getPostById.fulfilled, (state, action) => {
@@ -218,5 +219,5 @@ export {
   getPostsByUserId,
   getLikedPostsByUserId,
 };
-export const { clearPosts } = postSlice.actions;
+export const { clearPosts, clearPost } = postSlice.actions;
 export default postSlice.reducer;

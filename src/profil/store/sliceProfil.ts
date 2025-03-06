@@ -1,18 +1,23 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createFollow, deleteFollow } from "../api/profilAPI";
+import { createNotification } from "../../notifications/api/notificationAPI";
 
 const followUser = createAsyncThunk(
   "profil/followUser",
-  async ({ userId, myUserId }: { userId: number; myUserId: number }) => {
-    const response = await createFollow(userId, myUserId);
+  async ({ userId, followingId }: { userId: number; followingId: number }) => {
+    const response = await createFollow(userId, followingId);
+
+    // Créer une notification pour l'utilisateur suivi
+    await createNotification(followingId, userId, "follow");
+
     return response;
   }
 );
 
 const unfollowUser = createAsyncThunk(
   "profil/unfollowUser",
-  async ({ userId, myUserId }: { userId: number; myUserId: number }) => {
-    const response = await deleteFollow(userId, myUserId);
+  async ({ userId, followingId }: { userId: number; followingId: number }) => {
+    const response = await deleteFollow(userId, followingId);
     return response;
   }
 );

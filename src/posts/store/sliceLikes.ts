@@ -1,10 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { createLike, deleteLike } from "../api/likesAPI";
+import { createNotification } from "../../notifications/api/notificationAPI";
+import { Post } from "../type";
 
 const addLike = createAsyncThunk(
   "likes/addLike",
-  async ({ postId, userId }: { postId: number; userId: number }) => {
-    const response = await createLike(postId, userId);
+  async ({ post, userId }: { post: Post; userId: number }) => {
+    const response = await createLike(post.id, userId);
+    if (post.userId !== userId) {
+      await createNotification(post.userId, userId, "like", post.id);
+    }
+
     return response;
   }
 );
@@ -31,6 +37,12 @@ const likeSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(addLike.pending, (state) => {
+      state.loading = true;
+    });
+    builder.addCase(addLike.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(destroyLike.pending, (state) => {
       state.loading = true;
     });
   },

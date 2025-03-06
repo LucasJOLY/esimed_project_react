@@ -1,21 +1,22 @@
 import { Button, TextField, Typography, LinearProgress } from "@mui/material";
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router";
-import { useSelector } from "react-redux";
-import useDispatchNavigate from "../hook/useDispatchNavigate";
+import { NavLink, useNavigate } from "react-router";
+import { useSelector, useDispatch } from "react-redux";
 import { signUp } from "./store/slice";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import { RootState } from "../app/store";
+import { RootState, AppDispatch } from "../app/store";
 import { toast } from "react-toastify";
 import { FormattedMessage } from "react-intl";
 import {
   calculatePasswordStrength,
-  checkPassword,
-  isEmailAlreadyUsed,
+  validatePassword,
+  validateEmail,
+  validateUsername,
 } from "./service";
 
 const RegisterForm: React.FC = () => {
-  const dispatchNavigate = useDispatchNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -33,9 +34,15 @@ const RegisterForm: React.FC = () => {
 
   const handleRegister = async () => {
     if (checkForm()) {
-      await isEmailAlreadyUsed(email);
-      checkPassword(password);
-      dispatchNavigate(signUp({ username, email, password }), "/");
+      await validateEmail(email);
+
+      validatePassword(password);
+      validateUsername(username);
+      const result = await dispatch(signUp({ username, email, password }));
+      if (result.meta.requestStatus === "fulfilled") {
+        navigate("/");
+        window.location.reload();
+      }
     } else {
       toast.error(<FormattedMessage id="auth.fillAllFields" />);
     }
@@ -52,9 +59,7 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center min-h-screen w-full px-4`}
-    >
+    <div className={`flex flex-col items-center justify-center min-h-screen w-full px-4`}>
       <div
         className={`w-full max-w-md p-8 rounded-2xl ${
           isDark ? "bg-[#16181c]" : "bg-white"
@@ -133,11 +138,7 @@ const RegisterForm: React.FC = () => {
                       onClick={() => setShowPassword(!showPassword)}
                       className="cursor-pointer text-gray-500 hover:text-gray-700"
                     >
-                      {showPassword ? (
-                        <AiFillEye size={20} />
-                      ) : (
-                        <AiFillEyeInvisible size={20} />
-                      )}
+                      {showPassword ? <AiFillEye size={20} /> : <AiFillEyeInvisible size={20} />}
                     </div>
                   ),
                 },
@@ -172,17 +173,12 @@ const RegisterForm: React.FC = () => {
                     },
                   }}
                 />
-                <Typography
-                  variant="caption"
-                  style={{ color: passwordStrength.color }}
-                >
+                <Typography variant="caption" style={{ color: passwordStrength.color }}>
                   <FormattedMessage
                     id="auth.passwordStrength.label"
                     values={{
                       strength: (
-                        <FormattedMessage
-                          id={`auth.passwordStrength.${passwordStrength.label}`}
-                        />
+                        <FormattedMessage id={`auth.passwordStrength.${passwordStrength.label}`} />
                       ),
                     }}
                   />

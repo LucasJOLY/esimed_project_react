@@ -8,21 +8,44 @@ import {
 } from "../api/commentsAPI";
 import { Comment } from "../type";
 import { User } from "../../auth/types";
+import { isContentValid, isNotEmpty } from "../components/service/createService";
+import { toast } from "react-toastify";
+import { getIntl } from "../../language/config/translation";
+import { createNotification } from "../../notifications/api/notificationAPI";
+import { getPost } from "../api/postAPI";
 
 const addComment = createAsyncThunk(
   "comments/addComment",
-  async ({
-    postId,
-    user,
-    content,
-  }: {
-    postId: number;
-    user: User;
-    content: string;
-  }) => {
-    const timestamp = Date.now();
-    const response = await createComment(postId, user, content, timestamp);
-    return response;
+  async (
+    {
+      postId,
+      user,
+      content,
+      imageUrl,
+    }: { postId: number; user: User; content: string; imageUrl?: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      if (!isContentValid(content)) {
+        toast.error(getIntl("fr").formatMessage({ id: "toast.contentTooLong" }));
+        return rejectWithValue("Content is too long");
+      }
+      if (!isNotEmpty(content)) {
+        toast.error(getIntl("fr").formatMessage({ id: "toast.contentEmpty" }));
+        return rejectWithValue("Content is empty");
+      }
+      const timestamp = Date.now();
+      const response = await createComment(postId, user, content, timestamp, imageUrl);
+
+      const post = await getPost(postId);
+      if (post.userId !== user.id) {
+        await createNotification(post.userId, user.id, "comment", postId);
+      }
+
+      return response;
+    } catch (error) {
+      return rejectWithValue(error);
+    }
   }
 );
 
@@ -95,9 +118,7 @@ const commentSlice = createSlice({
       state.loading = true;
     });
     builder.addCase(destroyComment.fulfilled, (state, action) => {
-      state.comments = state.comments.filter(
-        (comment) => comment.id !== action.meta.arg.commentId
-      );
+      state.comments = state.comments.filter((comment) => comment.id !== action.meta.arg.commentId);
       state.loading = false;
     });
     builder.addCase(destroyComment.rejected, (state) => {
@@ -118,11 +139,5 @@ const commentSlice = createSlice({
   },
 });
 
-export {
-  addComment,
-  destroyComment,
-  getCommentsByPostId,
-  addCommentLike,
-  destroyCommentLike,
-};
+export { addComment, destroyComment, getCommentsByPostId, addCommentLike, destroyCommentLike };
 export default commentSlice.reducer;

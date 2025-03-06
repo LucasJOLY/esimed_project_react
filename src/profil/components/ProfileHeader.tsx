@@ -26,11 +26,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
   setFollowerCount,
 }) => {
   return (
-    <div
-      className={`relative w-full border-b ${
-        isDark ? "border-gray-800" : "border-gray-200"
-      }`}
-    >
+    <div className={`relative w-full border-b ${isDark ? "border-gray-800" : "border-gray-200"}`}>
       <div className={`h-34 ${isDark ? "bg-gray-800" : "bg-gray-200"}`}></div>
       <div className="px-6">
         <div className="relative -top-10">
@@ -58,11 +54,11 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
           </Typography>
           {actualUser?.id !== user?.id && (
             <FollowButton
-              user={actualUser}
+              actualUser={actualUser}
               setFollowersCount={setFollowerCount}
               followersCount={followerCount}
               sx={{
-                width: "100px",
+                width: "150px",
               }}
             />
           )}
@@ -79,7 +75,7 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({
             onClick={handleClickFollowing}
           >
             <span className="font-bold mr-1">{followCount}</span>
-            <FormattedMessage id="follow" />
+            <FormattedMessage id="follows" />
           </Button>
 
           <Button

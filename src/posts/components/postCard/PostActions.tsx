@@ -7,6 +7,9 @@ import { addRepost, destroyRepost } from "../../store/sliceReposts";
 import { RootState, AppDispatch } from "../../../app/store";
 import { Post } from "../../type";
 import { toast } from "react-toastify";
+import { getIntl } from "../../../language/config/translation";
+import { FormattedMessage } from "react-intl";
+
 interface PostActionsProps {
   post: Post;
   isDark: boolean;
@@ -39,7 +42,7 @@ const PostActions = ({ post, isDark, formattedDate }: PostActionsProps) => {
       dispatch(destroyLike({ postId: post.id, userId: userId ?? 0 }));
     } else {
       setLikeNumbers(likeNumbers + 1);
-      dispatch(addLike({ postId: post.id, userId: userId ?? 0 }));
+      dispatch(addLike({ post: post, userId: userId ?? 0 }));
     }
     setIsLiked(!isLiked);
   };
@@ -47,11 +50,11 @@ const PostActions = ({ post, isDark, formattedDate }: PostActionsProps) => {
   const handleRepost = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (post.reposted && post.repostedBy.id !== userId) {
-      toast.error("Vous ne pouvez pas reposter un repost");
+      toast.error(<FormattedMessage id="toast.cannotRepostRepost" />);
       return;
     }
     if (post.user.id === userId) {
-      toast.error("Vous ne pouvez pas reposter votre propre post");
+      toast.error(<FormattedMessage id="toast.cannotRepostOwnPost" />);
       return;
     }
     if (isReposted) {
@@ -74,11 +77,7 @@ const PostActions = ({ post, isDark, formattedDate }: PostActionsProps) => {
         <div
           className={`flex items-center gap-2 cursor-pointer transition-colors duration-200 ${
             isReposted ? "text-green-500" : "text-gray-500"
-          } ${
-            !post.reposted && post.user.id !== userId
-              ? "hover:text-green-500"
-              : ""
-          }`}
+          } ${!post.reposted && post.user.id !== userId ? "hover:text-green-500" : ""}`}
           onClick={handleRepost}
         >
           <FaRetweet size={20} />
@@ -95,10 +94,7 @@ const PostActions = ({ post, isDark, formattedDate }: PostActionsProps) => {
         </div>
       </div>
 
-      <Typography
-        className="text-sm"
-        sx={{ color: isDark ? "#71767b" : "#536471" }}
-      >
+      <Typography className="text-sm" sx={{ color: isDark ? "#71767b" : "#536471" }}>
         {formattedDate}
       </Typography>
     </div>

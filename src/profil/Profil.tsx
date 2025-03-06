@@ -4,12 +4,9 @@ import { useParams } from "react-router";
 import { RootState } from "../app/store";
 import { User } from "../auth/types";
 import { AppDispatch } from "../app/store";
-import { getUserById } from "../auth/store/slice";
+import { getUserById, resetUserById } from "../auth/store/slice";
 import { CircularProgress } from "@mui/material";
-import {
-  getLikedPostsByUserId,
-  getPostsByUserId,
-} from "../posts/store/slicePost";
+import { clearPosts, getLikedPostsByUserId, getPostsByUserId } from "../posts/store/slicePost";
 import ProfileHeader from "./components/ProfileHeader";
 import FollowPopover from "./components/FollowPopover";
 import ProfilePosts from "./components/ProfilePosts";
@@ -22,6 +19,7 @@ function Profil() {
   const userById = useSelector((state: RootState) => state.auth.userById);
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const posts = useSelector((state: RootState) => state.posts.posts);
+  const loadingRepost = useSelector((state: RootState) => state.reposts.repostLoading);
 
   const [byLikes, setByLikes] = useState(false);
   const [byTimeDesc, setByTimeDesc] = useState(true);
@@ -35,10 +33,21 @@ function Profil() {
     setValue(newValue);
   };
 
-  const [anchorElFollowers, setAnchorElFollowers] =
-    useState<null | HTMLElement>(null);
-  const [anchorElFollowing, setAnchorElFollowing] =
-    useState<null | HTMLElement>(null);
+  useEffect(() => {
+    return () => {
+      dispatch(resetUserById());
+      dispatch(clearPosts());
+    };
+  }, []);
+
+  useEffect(() => {
+    if (loadingRepost === "succeeded") {
+      getPosts();
+    }
+  }, [loadingRepost]);
+
+  const [anchorElFollowers, setAnchorElFollowers] = useState<null | HTMLElement>(null);
+  const [anchorElFollowing, setAnchorElFollowing] = useState<null | HTMLElement>(null);
   const handleClickFollowers = (event: React.MouseEvent<HTMLElement>) => {
     if (actualUser.id == user?.id && followerCount > 0) {
       setAnchorElFollowers(event.currentTarget);
@@ -63,17 +72,17 @@ function Profil() {
 
   useEffect(() => {
     if (user && id && user.id == Number(id)) {
-      setActualUser(user);
+      dispatch(getUserById(user.id));
     } else if (id) {
       dispatch(getUserById(Number(id)));
     }
     if (!id) {
-      setActualUser(user as User);
+      dispatch(getUserById(user?.id || 0));
     }
   }, [id]);
 
   useEffect(() => {
-    if (userById && id && userById.id == Number(id)) {
+    if (userById) {
       setActualUser(userById);
     }
   }, [userById]);
@@ -124,7 +133,6 @@ function Profil() {
         <FollowPopover
           open={openFollowing}
           onClose={handleCloseFollowing}
-          anchorEl={anchorElFollowing}
           title="following_list"
           users={actualUser.following || []}
           isDark={isDark}
@@ -133,7 +141,6 @@ function Profil() {
         <FollowPopover
           open={openFollowers}
           onClose={handleCloseFollowers}
-          anchorEl={anchorElFollowers}
           title="followers_list"
           users={actualUser.followers || []}
           isDark={isDark}

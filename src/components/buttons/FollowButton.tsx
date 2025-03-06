@@ -7,36 +7,34 @@ import { User } from "../../auth/types";
 import { followUser, unfollowUser } from "../../profil/store/sliceProfil";
 
 interface FollowButtonProps extends ButtonProps {
-  user: User;
+  actualUser: User;
   setFollowersCount: (count: number) => void;
   followersCount: number;
 }
 
 const FollowButton: React.FC<FollowButtonProps> = ({
-  user,
+  actualUser,
   setFollowersCount,
   followersCount,
   ...props
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const isDark = useSelector((state: RootState) => state.theme.isDark);
-  const actualUser = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
-    setIsFollowing(user.following.some((user) => user.id === actualUser?.id));
-  }, []);
+    console.log(actualUser);
+    setIsFollowing(actualUser.followers.some((user) => user.id === user?.id));
+  }, [actualUser]);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isFollowing) {
-      dispatch(
-        unfollowUser({ userId: user.id, myUserId: actualUser?.id || 0 })
-      );
+      dispatch(unfollowUser({ userId: user?.id || 0, followingId: actualUser.id }));
       setFollowersCount(followersCount - 1);
       setIsFollowing(false);
     } else {
-      dispatch(followUser({ userId: user.id, myUserId: actualUser?.id || 0 }));
+      dispatch(followUser({ userId: user?.id || 0, followingId: actualUser.id }));
       setFollowersCount(followersCount + 1);
       setIsFollowing(true);
     }
@@ -51,10 +49,10 @@ const FollowButton: React.FC<FollowButtonProps> = ({
         textTransform: "none",
         fontWeight: "bold",
         backgroundColor: isFollowing ? "transparent" : "#1d9bf0",
-        color: isFollowing ? (isDark ? "#fff" : "#000") : "#fff",
-        border: isFollowing ? `1px solid ${isDark ? "#fff" : "#000"}` : "none",
+        color: isFollowing ? "red" : "#fff",
+        border: isFollowing ? `1px solid red` : "none",
         "&:hover": {
-          backgroundColor: isFollowing ? "rgba(255, 0, 0, 0.1)" : "#1a8cd8",
+          backgroundColor: isFollowing ? "transparent" : "#1a8cd8",
           border: isFollowing ? "1px solid red" : "none",
           color: isFollowing ? "red" : "#fff",
         },

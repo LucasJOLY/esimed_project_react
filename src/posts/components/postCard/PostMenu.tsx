@@ -1,4 +1,4 @@
-import { IconButton, Popover, Button, Typography } from "@mui/material";
+import { IconButton, Popover, Button } from "@mui/material";
 import { BsThreeDots } from "react-icons/bs";
 import { FaPen, FaTrash } from "react-icons/fa";
 import { useState } from "react";
@@ -25,11 +25,7 @@ const PostMenu = ({ onEdit, onDelete, isDark }: PostMenuProps) => {
 
   return (
     <>
-      <IconButton
-        onClick={handleMenuClick}
-        size="small"
-        sx={{ color: isDark ? "white" : "black" }}
-      >
+      <IconButton onClick={handleMenuClick} size="small" sx={{ color: isDark ? "white" : "black" }}>
         <BsThreeDots />
       </IconButton>
 
@@ -41,9 +37,7 @@ const PostMenu = ({ onEdit, onDelete, isDark }: PostMenuProps) => {
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
         <div
-          className={`p-2 flex flex-col ${
-            isDark ? "bg-[#16181c]" : "bg-white"
-          }`}
+          className={`p-2 flex flex-col ${isDark ? "bg-[#16181c]" : "bg-white"}`}
           style={{
             display: "flex",
             flexDirection: "column",

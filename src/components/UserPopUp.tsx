@@ -1,30 +1,24 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "../../app/store";
-import { getUserById } from "../../auth/store/slice";
-import { User } from "../../auth/types";
-import {
-  Avatar,
-  Button,
-  CircularProgress,
-  Popover,
-  Typography,
-} from "@mui/material";
+import { AppDispatch, RootState } from "../app/store";
+import { getUserById, resetUserById } from "../auth/store/slice";
+import { Avatar, Button, CircularProgress, Popover, Typography } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
-import FollowButton from "../../components/buttons/FollowButton";
+import FollowButton from "./buttons/FollowButton";
 
-function UserPopUp({ user }: { user: User }) {
+function UserPopUp({ userId }: { userId: number }) {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const userById = useSelector((state: RootState) => state.auth.userById);
+  const user = useSelector((state: RootState) => state.auth.user);
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
-    dispatch(getUserById(user.id));
+    dispatch(getUserById(userId));
   };
   const handleClose = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -39,17 +33,19 @@ function UserPopUp({ user }: { user: User }) {
     setFollowerCount(userById?.followers?.length || 0);
   }, [userById]);
 
+  useEffect(() => {
+    return () => {
+      dispatch(resetUserById());
+    };
+  }, []);
+
   const goToProfile = () => {
     navigate(`/profile/${userById?.id}`);
   };
 
   return (
     <Fragment>
-      <Avatar
-        component="button"
-        sx={{ width: 48, height: 48 }}
-        onClick={handleClick}
-      />
+      <Avatar component="button" sx={{ width: 48, height: 48 }} onClick={handleClick} />
       <Popover
         open={open}
         onClose={handleClose}
@@ -73,9 +69,7 @@ function UserPopUp({ user }: { user: User }) {
             }}
           >
             <div className="relative w-[300px]">
-              <div
-                className={`h-24 ${isDark ? "bg-gray-800" : "bg-gray-200"}`}
-              ></div>
+              <div className={`h-24 ${isDark ? "bg-gray-800" : "bg-gray-200"}`}></div>
               <div className="px-4">
                 <div className="relative -top-6">
                   <Avatar
@@ -108,13 +102,13 @@ function UserPopUp({ user }: { user: User }) {
                   >
                     {userById?.username}
                   </Typography>
-                  {userById?.id !== user.id && (
+                  {userById?.id != user?.id && (
                     <FollowButton
-                      user={userById}
+                      actualUser={userById}
                       setFollowersCount={setFollowerCount}
                       followersCount={followerCount}
                       sx={{
-                        width: "100px",
+                        width: "130px",
                       }}
                     />
                   )}
@@ -130,7 +124,7 @@ function UserPopUp({ user }: { user: User }) {
                     }}
                   >
                     <span className="font-bold mr-1">{followCount}</span>
-                    <FormattedMessage id="follow" />
+                    <FormattedMessage id="follows" />
                   </Button>
 
                   <Button

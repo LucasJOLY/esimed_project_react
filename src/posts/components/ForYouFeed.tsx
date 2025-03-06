@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../app/store";
-import { getForYouFeed } from "../store/slicePost";
-import { useNavigate } from "react-router";
+import { clearPosts, getForYouFeed } from "../store/slicePost";
 import { CircularProgress, Typography } from "@mui/material";
 import PostCard from "./postCard/PostCard";
 import { FormattedMessage } from "react-intl";
@@ -10,11 +9,9 @@ import FilterComponent from "./FilterComponent";
 
 function ForYouFeed() {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
-  const isDark = useSelector((state: RootState) => state.theme.isDark);
   const posts = useSelector((state: RootState) => state.posts.posts);
   const loading = useSelector((state: RootState) => state.posts.loading);
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const loadingRepost = useSelector((state: RootState) => state.reposts.repostLoading);
 
   // Filtre par popularité (likes) sur les 3 derniers jours
   const [filterByLikes, setFilterByLikes] = useState(false);
@@ -31,8 +28,20 @@ function ForYouFeed() {
   };
 
   useEffect(() => {
+    if (loadingRepost === "succeeded") {
+      loadPosts();
+    }
+  }, [loadingRepost]);
+
+  useEffect(() => {
     loadPosts();
   }, [filterByLikes, filterByTime]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearPosts());
+    };
+  }, []);
 
   return (
     <div>

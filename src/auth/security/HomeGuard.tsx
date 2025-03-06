@@ -49,7 +49,6 @@ const HomeGuard = ({ AuthComponent, NonAuthComponent }: HomeGuardProps) => {
         }
       } catch (error) {
         setLoading(false);
-        console.error(error);
         return;
       }
       setLoading(false);

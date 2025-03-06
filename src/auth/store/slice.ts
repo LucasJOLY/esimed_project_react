@@ -25,15 +25,7 @@ const signIn = createAsyncThunk(
 
 const signUp = createAsyncThunk(
   "auth/register",
-  async ({
-    username,
-    email,
-    password,
-  }: {
-    username: string;
-    email: string;
-    password: string;
-  }) => {
+  async ({ username, email, password }: { username: string; email: string; password: string }) => {
     const response = await register(username, email, password);
     localStorage.setItem("token", response.accessToken);
     return response;
@@ -45,13 +37,10 @@ const getMe = createAsyncThunk("auth/getMe", async (userId: number) => {
   return response;
 });
 
-const getUserById = createAsyncThunk(
-  "auth/getUserById",
-  async (userId: number) => {
-    const response = await getUser(userId);
-    return response;
-  }
-);
+const getUserById = createAsyncThunk("auth/getUserById", async (userId: number) => {
+  const response = await getUser(userId);
+  return response;
+});
 
 const initialState: AuthState = {
   token: localStorage.getItem("token") || sessionStorage.getItem("token"),
@@ -67,6 +56,11 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
       state.token = null;
+      state.user = null;
+      state.userById = null;
+    },
+    resetUserById: (state) => {
+      state.userById = null;
     },
   },
   extraReducers: (builder) => {
@@ -92,5 +86,5 @@ const authSlice = createSlice({
 });
 
 export { signIn, signUp, getMe, getUserById };
-export const { logOut } = authSlice.actions;
+export const { logOut, resetUserById } = authSlice.actions;
 export default authSlice.reducer;

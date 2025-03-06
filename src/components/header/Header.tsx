@@ -26,18 +26,13 @@ const Header = () => {
 
   return (
     <div
-      className={`flex items-center p-2 justify-between sticky top-0 z-50 ${
-        isDark
-          ? "bg-[#16181c] text-white"
-          : "bg-white text-black border-b border-gray-200"
+      className={`flex items-center p-2 justify-between sticky top-0 z-50 h-16 ${
+        isDark ? "bg-[#16181c] text-white" : "bg-white text-black border-b border-gray-200"
       }`}
     >
       <div className="flex items-center gap-2">
         <div className="md:hidden">
-          <IconButton
-            onClick={handleOpenMenu}
-            className={isDark ? "!text-white" : "!text-black"}
-          >
+          <IconButton onClick={handleOpenMenu} className={isDark ? "!text-white" : "!text-black"}>
             <IoSettingsSharp size={24} />
           </IconButton>
           <Menu
@@ -64,10 +59,7 @@ const Header = () => {
         </div>
       </div>
 
-      <div
-        className="flex items-center gap-2 cursor-pointer"
-        onClick={() => navigate("/")}
-      >
+      <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/")}>
         <HiMiniChatBubbleLeftRight size={40} />
         <Typography variant="h4" className="font-bold md:text-2xl">
           <FormattedMessage id="app.title" />

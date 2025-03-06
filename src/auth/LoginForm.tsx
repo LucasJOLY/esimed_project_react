@@ -1,21 +1,16 @@
-import {
-  Button,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Checkbox, FormControlLabel, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { NavLink } from "react-router";
-import { useSelector } from "react-redux";
+import { NavLink, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
 import useDispatchNavigate from "../hook/useDispatchNavigate";
 import { signIn } from "./store/slice";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
-import { RootState } from "../app/store";
+import { AppDispatch, RootState } from "../app/store";
 import { FormattedMessage } from "react-intl";
 import { toast } from "react-toastify";
 const LoginForm: React.FC = () => {
-  const dispatchNavigate = useDispatchNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +18,11 @@ const LoginForm: React.FC = () => {
   const [stayConnected, setStayConnected] = useState(false);
   const handleLogin = async () => {
     if (formCompleted) {
-      await dispatchNavigate(signIn({ email, password, stayConnected }), "/");
+      const result = await dispatch(signIn({ email, password, stayConnected }));
+      if (result.meta.requestStatus === "fulfilled") {
+        navigate("/");
+        window.location.reload();
+      }
     } else {
       toast.error("Veuillez remplir tous les champs");
     }
@@ -32,9 +31,7 @@ const LoginForm: React.FC = () => {
   const formCompleted = email.length > 0 && password.length > 0;
 
   return (
-    <div
-      className={`flex flex-col items-center justify-center min-h-screen w-full px-4}`}
-    >
+    <div className={`flex flex-col items-center justify-center min-h-screen w-full px-4}`}>
       <div
         className={`w-full max-w-md p-8 rounded-2xl ${
           isDark ? "bg-[#16181c]" : "bg-white"
@@ -86,11 +83,7 @@ const LoginForm: React.FC = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="cursor-pointer text-gray-500 hover:text-gray-700"
                   >
-                    {showPassword ? (
-                      <AiFillEye size={20} />
-                    ) : (
-                      <AiFillEyeInvisible size={20} />
-                    )}
+                    {showPassword ? <AiFillEye size={20} /> : <AiFillEyeInvisible size={20} />}
                   </div>
                 ),
               },

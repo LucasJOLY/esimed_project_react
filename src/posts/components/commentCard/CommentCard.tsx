@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@mui/material";
+import { Avatar, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState, AppDispatch } from "../../../app/store";
 import { useNavigate } from "react-router";
@@ -10,6 +10,9 @@ import { destroyComment } from "../../store/sliceComment";
 import DeleteModal from "../../../components/modal/DeleteModal";
 import CommentMenu from "./CommentMenu";
 import CommentActions from "./CommentActions";
+import ExpandableContent from "../../../components/ExpandableContent/ExpandableContent";
+import { FormattedMessage } from "react-intl";
+
 interface CommentCardProps {
   comment: Comment;
 }
@@ -19,13 +22,10 @@ const CommentCard = ({ comment }: CommentCardProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const userId = useSelector((state: RootState) => state.auth.user?.id);
-  const formattedDate = format(
-    new Date(comment.created_at),
-    "dd/MM/yyyy HH:mm",
-    {
-      locale: fr,
-    }
-  );
+  const formattedDate = format(new Date(comment.created_at), "dd/MM/yyyy HH:mm", {
+    locale: fr,
+  });
+  const [showFullContent, setShowFullContent] = useState(false);
 
   // Popover state
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
@@ -50,9 +50,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
   return (
     <div
       className={`w-full p-4 border-b cursor-pointer ${
-        isDark
-          ? "border-[#333639] hover:bg-[#1d1f23]"
-          : "border-gray-200 hover:bg-gray-50"
+        isDark ? "border-[#333639] hover:bg-[#1d1f23]" : "border-gray-200 hover:bg-gray-50"
       }`}
     >
       <div className="flex gap-3">
@@ -60,14 +58,8 @@ const CommentCard = ({ comment }: CommentCardProps) => {
 
         <div className="flex-1">
           <div className="flex items-center justify-between">
-            <div
-              className="flex items-center gap-2 !rounded-full"
-              onClick={handleProfileClick}
-            >
-              <Typography
-                className="font-bold"
-                sx={{ color: isDark ? "white" : "black" }}
-              >
+            <div className="flex items-center gap-2 !rounded-full" onClick={handleProfileClick}>
+              <Typography className="font-bold" sx={{ color: isDark ? "white" : "black" }}>
                 {comment.user.username}
               </Typography>
             </div>
@@ -84,25 +76,26 @@ const CommentCard = ({ comment }: CommentCardProps) => {
                   }}
                   onConfirm={handleConfirmDelete}
                   isDark={isDark}
+                  formattedTitle={<FormattedMessage id="post.deleteConfirmationComment" />}
                 />
               </>
             )}
           </div>
 
-          <Typography
-            className="mt-1"
-            sx={{
-              color: isDark ? "white" : "black",
-              overflowWrap: "anywhere",
-            }}
-          >
-            {comment.content}
-          </Typography>
-          <CommentActions
-            comment={comment}
-            isDark={isDark}
-            formattedDate={formattedDate}
-          />
+          <div>
+            <ExpandableContent content={comment.content} isDark={isDark} />
+            {comment.imageUrl && (
+              <div className="mt-2">
+                <img
+                  src={comment.imageUrl}
+                  alt="Comment GIF"
+                  className="max-w-full rounded-lg"
+                  style={{ maxHeight: "400px", objectFit: "contain" }}
+                />
+              </div>
+            )}
+          </div>
+          <CommentActions comment={comment} isDark={isDark} formattedDate={formattedDate} />
         </div>
       </div>
     </div>

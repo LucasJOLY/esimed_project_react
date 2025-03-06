@@ -2,11 +2,14 @@ import { toast } from "react-toastify";
 import { configAPI } from "../../config/apiConfig";
 import { Comment, CommentLikes } from "../type";
 import { User } from "../../auth/types";
+import { getIntl } from "../../language/config/translation";
+
 export const createComment = async (
   postId: number,
   user: User,
   content: string,
-  created_at: number
+  created_at: number,
+  imageUrl?: string
 ): Promise<Comment> => {
   try {
     const response = await configAPI.post(`/660/comments`, {
@@ -14,13 +17,14 @@ export const createComment = async (
       userId: user.id,
       content,
       created_at,
+      imageUrl,
     });
     let comment: Comment = response.data;
     comment.user = user;
     comment.commentLikes = [];
     return comment;
   } catch (error) {
-    toast.error("Erreur lors de la création du like");
+    toast.error(getIntl("fr").formatMessage({ id: "toast.likeCreationError" }));
     throw error;
   }
 };
@@ -30,7 +34,7 @@ export const deleteComment = async (id: number): Promise<Comment> => {
     const response = await configAPI.delete(`/640/comments/${id}`);
     return response.data;
   } catch (error) {
-    toast.error("Erreur lors de la suppression du like");
+    toast.error(getIntl("fr").formatMessage({ id: "toast.likeDeletionError" }));
     throw error;
   }
 };
@@ -57,7 +61,7 @@ export const getCommentsById = async (
       return comments;
     }
   } catch (error) {
-    toast.error("Erreur lors de la récupération des commentaires");
+    toast.error(getIntl("fr").formatMessage({ id: "toast.commentsFetchError" }));
     throw error;
   }
 };
@@ -73,7 +77,7 @@ export const createCommentLike = async (
     });
     return response.data;
   } catch (error) {
-    toast.error("Erreur lors de la création du like");
+    toast.error(getIntl("fr").formatMessage({ id: "toast.likeCreationError" }));
     throw error;
   }
 };
@@ -90,7 +94,7 @@ export const deleteCommentLike = async (
     await configAPI.delete(`/640/commentLikes/${commentLike.id}`);
     return commentLike;
   } catch (error) {
-    toast.error("Erreur lors de la suppression du like");
+    toast.error(getIntl("fr").formatMessage({ id: "toast.likeDeletionError" }));
     throw error;
   }
 };
