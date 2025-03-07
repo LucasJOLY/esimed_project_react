@@ -21,7 +21,7 @@ const CommentCard = ({ comment }: CommentCardProps) => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const userId = useSelector((state: RootState) => state.auth.authUser?.id);
   const formattedDate = format(new Date(comment.created_at), "dd/MM/yyyy HH:mm", {
     locale: fr,
   });

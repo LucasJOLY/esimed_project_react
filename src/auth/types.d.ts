@@ -12,8 +12,9 @@ interface User {
 
 interface AuthState {
   token: string | null;
-  user: User | null;
+  authUser: User | null;
   userById: User | null;
+  userPopUpById: User | null;
 }
 
 interface PasswordStrength {

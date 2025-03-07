@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
-import { getUserById, resetUserById } from "../auth/store/slice";
+import { getUserPopUpById, resetUserById } from "../auth/store/slice";
 import { Avatar, Button, CircularProgress, Popover, Typography } from "@mui/material";
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router";
@@ -10,15 +10,15 @@ import FollowButton from "./buttons/FollowButton";
 function UserPopUp({ userId }: { userId: number }) {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const userById = useSelector((state: RootState) => state.auth.userById);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const userPopUpById = useSelector((state: RootState) => state.auth.userPopUpById);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
-    dispatch(getUserById(userId));
+    dispatch(getUserPopUpById(userId));
   };
   const handleClose = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -29,9 +29,9 @@ function UserPopUp({ userId }: { userId: number }) {
   const [followerCount, setFollowerCount] = useState(0);
 
   useEffect(() => {
-    setFollowCount(userById?.following?.length || 0);
-    setFollowerCount(userById?.followers?.length || 0);
-  }, [userById]);
+    setFollowCount(userPopUpById?.following?.length || 0);
+    setFollowerCount(userPopUpById?.followers?.length || 0);
+  }, [userPopUpById]);
 
   useEffect(() => {
     return () => {
@@ -40,7 +40,7 @@ function UserPopUp({ userId }: { userId: number }) {
   }, []);
 
   const goToProfile = () => {
-    navigate(`/profile/${userById?.id}`);
+    navigate(`/profile/${userPopUpById?.id}`);
   };
 
   return (
@@ -55,7 +55,7 @@ function UserPopUp({ userId }: { userId: number }) {
           horizontal: "left",
         }}
       >
-        {!userById ? (
+        {!userPopUpById ? (
           <div>
             <CircularProgress />
           </div>
@@ -100,11 +100,11 @@ function UserPopUp({ userId }: { userId: number }) {
                       cursor: "pointer",
                     }}
                   >
-                    {userById?.username}
+                    {userPopUpById?.username}
                   </Typography>
-                  {userById?.id != user?.id && (
+                  {userPopUpById?.id != authUser?.id && (
                     <FollowButton
-                      actualUser={userById}
+                      actualUser={userPopUpById}
                       setFollowersCount={setFollowerCount}
                       followersCount={followerCount}
                       sx={{

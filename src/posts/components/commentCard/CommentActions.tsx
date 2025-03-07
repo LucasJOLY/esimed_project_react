@@ -11,13 +11,9 @@ interface CommentActionsProps {
   formattedDate: string;
 }
 
-const CommentActions = ({
-  comment,
-  isDark,
-  formattedDate,
-}: CommentActionsProps) => {
+const CommentActions = ({ comment, isDark, formattedDate }: CommentActionsProps) => {
   const dispatch = useDispatch<AppDispatch>();
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const userId = useSelector((state: RootState) => state.auth.authUser?.id);
   const [isLiked, setIsLiked] = useState(false);
   const [likeNumbers, setLikeNumbers] = useState(comment.commentLikes.length);
 
@@ -30,9 +26,7 @@ const CommentActions = ({
     e.stopPropagation();
     if (isLiked) {
       setLikeNumbers(likeNumbers - 1);
-      dispatch(
-        destroyCommentLike({ commentId: comment.id, userId: userId ?? 0 })
-      );
+      dispatch(destroyCommentLike({ commentId: comment.id, userId: userId ?? 0 }));
     } else {
       setLikeNumbers(likeNumbers + 1);
       dispatch(addCommentLike({ commentId: comment.id, userId: userId ?? 0 }));
@@ -54,10 +48,7 @@ const CommentActions = ({
         </div>
       </div>
 
-      <Typography
-        className="text-sm"
-        sx={{ color: isDark ? "#71767b" : "#536471" }}
-      >
+      <Typography className="text-sm" sx={{ color: isDark ? "#71767b" : "#536471" }}>
         {formattedDate}
       </Typography>
     </div>

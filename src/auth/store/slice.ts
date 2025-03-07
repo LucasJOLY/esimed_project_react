@@ -42,10 +42,16 @@ const getUserById = createAsyncThunk("auth/getUserById", async (userId: number) 
   return response;
 });
 
+const getUserPopUpById = createAsyncThunk("auth/getUserPopUpById", async (userId: number) => {
+  const response = await getUser(userId);
+  return response;
+});
+
 const initialState: AuthState = {
   token: localStorage.getItem("token") || sessionStorage.getItem("token"),
-  user: null,
+  authUser: null,
   userById: null,
+  userPopUpById: null,
 };
 
 const authSlice = createSlice({
@@ -56,8 +62,9 @@ const authSlice = createSlice({
       localStorage.removeItem("token");
       sessionStorage.removeItem("token");
       state.token = null;
-      state.user = null;
+      state.authUser = null;
       state.userById = null;
+      state.userPopUpById = null;
     },
     resetUserById: (state) => {
       state.userById = null;
@@ -67,24 +74,52 @@ const authSlice = createSlice({
     builder.addCase(signIn.fulfilled, (state, action) => {
       state.token = action.payload.accessToken;
     });
-    builder.addCase(signIn.rejected, (state, action) => {
+    builder.addCase(signIn.rejected, (state) => {
       state.token = null;
     });
     builder.addCase(signUp.fulfilled, (state, action) => {
       state.token = action.payload.accessToken;
     });
-    builder.addCase(signUp.rejected, (state, action) => {
+    builder.addCase(signUp.rejected, (state) => {
       state.token = null;
     });
-    builder.addCase(getMe.fulfilled, (state, action) => {
-      state.user = action.payload;
+
+    builder.addCase(getMe.pending, (state) => {
+      state.authUser = null;
     });
+
+    builder.addCase(getMe.fulfilled, (state, action) => {
+      state.authUser = action.payload;
+    });
+    builder.addCase(getMe.rejected, (state) => {
+      state.authUser = null;
+    });
+
+    builder.addCase(getUserById.pending, (state) => {
+      state.userById = null;
+    });
+
     builder.addCase(getUserById.fulfilled, (state, action) => {
       state.userById = action.payload;
+    });
+    builder.addCase(getUserById.rejected, (state) => {
+      state.userById = null;
+    });
+
+    builder.addCase(getUserPopUpById.pending, (state) => {
+      state.userPopUpById = null;
+    });
+
+    builder.addCase(getUserPopUpById.fulfilled, (state, action) => {
+      state.userPopUpById = action.payload;
+    });
+
+    builder.addCase(getUserPopUpById.rejected, (state) => {
+      state.userPopUpById = null;
     });
   },
 });
 
-export { signIn, signUp, getMe, getUserById };
+export { signIn, signUp, getMe, getUserById, getUserPopUpById };
 export const { logOut, resetUserById } = authSlice.actions;
 export default authSlice.reducer;

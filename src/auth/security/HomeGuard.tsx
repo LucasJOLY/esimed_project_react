@@ -15,7 +15,7 @@ interface DecodedToken {
 
 const HomeGuard = ({ AuthComponent, NonAuthComponent }: HomeGuardProps) => {
   const token = useSelector((state: RootState) => state.auth.token);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState(true);
 
@@ -35,7 +35,7 @@ const HomeGuard = ({ AuthComponent, NonAuthComponent }: HomeGuardProps) => {
           return;
         }
 
-        if (!user) {
+        if (!authUser) {
           try {
             const response = await dispatch(getMe(userId));
             if (!response) {
@@ -55,10 +55,10 @@ const HomeGuard = ({ AuthComponent, NonAuthComponent }: HomeGuardProps) => {
     };
 
     verifyAuth();
-  }, [token, user, dispatch]);
+  }, [token, authUser, dispatch]);
 
   if (loading) return null;
-  return user ? <AuthComponent /> : <NonAuthComponent />;
+  return authUser ? <AuthComponent /> : <NonAuthComponent />;
 };
 
 export default HomeGuard;

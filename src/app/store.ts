@@ -10,6 +10,7 @@ import profilReducer from "../profil/store/sliceProfil";
 import gifReducer from "../gif/store/slices/gifSlice";
 import notificationReducer from "../notifications/store/sliceNotifications";
 import searchReducer from "../search/store/sliceSearch";
+import favoritesReducer from "../posts/store/sliceFavorites";
 
 export const store = configureStore({
   reducer: {
@@ -24,6 +25,7 @@ export const store = configureStore({
     gifs: gifReducer,
     notifications: notificationReducer,
     search: searchReducer,
+    favorites: favoritesReducer,
   },
 });
 

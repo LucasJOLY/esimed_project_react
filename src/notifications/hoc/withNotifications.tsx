@@ -7,7 +7,7 @@ import { useIntl } from "react-intl";
 export const withNotifications = (WrappedComponent: React.ComponentType<any>) => {
   return function WithNotificationsComponent(props: any) {
     const dispatch = useDispatch<AppDispatch>();
-    const userId = useSelector((state: RootState) => state.auth.user?.id);
+    const userId = useSelector((state: RootState) => state.auth.authUser?.id);
     const { notifications } = useSelector((state: RootState) => state.notifications);
     const intl = useIntl();
 

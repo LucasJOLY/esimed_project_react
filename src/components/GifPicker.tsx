@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Box,
-  TextField,
   IconButton,
   Modal,
   Typography,
@@ -16,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../app/store";
 import { searchGifsThunk, clearGifs } from "../gif/store/slices/gifSlice";
 import PrimaryButton from "./buttons/PrimaryButton";
+import CustomTextField from "./CustomTextField/CustomTextField";
 
 interface GifPickerProps {
   onSelect: (gifUrl: string) => void;
@@ -128,31 +128,13 @@ const GifPicker: React.FC<GifPickerProps> = ({ onSelect, isDark }) => {
             </IconButton>
           </div>
 
-          <TextField
+          <CustomTextField
             fullWidth
             variant="outlined"
             placeholder={intl.formatMessage({ id: "gifPicker.searchPlaceholder" })}
             value={searchQuery}
             onChange={handleSearch}
-            sx={{
-              mb: 2,
-              "& .MuiOutlinedInput-root": {
-                borderRadius: 2,
-                backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                "&:hover fieldset": {
-                  borderColor: "#1d9bf0",
-                },
-                "& fieldset": {
-                  borderColor: isDark ? "#333639" : "#cfd9de",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: isDark ? "#71767b" : "#536471",
-              },
-              "& input": {
-                color: isDark ? "white" : "black",
-              },
-            }}
+            isDark={isDark}
           />
 
           {error && (

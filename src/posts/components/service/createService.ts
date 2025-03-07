@@ -1,5 +1,5 @@
 export const isContentValid = (content: string): boolean => {
-  return content.length <= 280;
+  return content.length <= 500;
 };
 
 export const isNotEmpty = (content: string): boolean => {

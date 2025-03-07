@@ -20,7 +20,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | undefined>();
   const [mentions, setMentions] = useState<number[]>([]);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const post = useSelector((state: RootState) => state.posts.post);
   const intl = useIntl();
   const { id } = useParams();
@@ -52,7 +52,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
         editPost({
           id: post?.id || 0,
           content,
-          userId: user?.id || 0,
+          userId: authUser?.id || 0,
           imageUrl,
           mentions,
         }),
@@ -62,7 +62,7 @@ const AddPost = ({ edit }: { edit?: boolean }) => {
       dispatchNavigate(
         addPost({
           content,
-          userId: user?.id || 0,
+          userId: authUser?.id || 0,
           imageUrl,
           mentions,
         }),

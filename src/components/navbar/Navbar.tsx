@@ -6,7 +6,6 @@ import { IconButton, Typography, Badge } from "@mui/material";
 import { AiFillHome } from "react-icons/ai";
 import { IoNotifications, IoNotificationsSharp } from "react-icons/io5";
 import { BsPersonFill } from "react-icons/bs";
-import { RiMessage2Fill } from "react-icons/ri";
 import { FaSearch } from "react-icons/fa";
 
 const Navbar = () => {

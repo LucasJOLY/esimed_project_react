@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControlLabel, TextField, Typography } from "@mui/material";
+import { Button, Checkbox, FormControlLabel, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,6 +8,8 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { AppDispatch, RootState } from "../app/store";
 import { FormattedMessage } from "react-intl";
 import { toast } from "react-toastify";
+import CustomTextField from "../components/CustomTextField/CustomTextField";
+
 const LoginForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -43,39 +45,24 @@ const LoginForm: React.FC = () => {
           </Typography>
         </div>
         <div className="gap-4 flex flex-col">
-          <TextField
+          <CustomTextField
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             label={<FormattedMessage id="auth.email" />}
             type="text"
             fullWidth
             variant="outlined"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                "&:hover fieldset": {
-                  borderColor: "#1d9bf0",
-                },
-                "& fieldset": {
-                  borderColor: isDark ? "#333639" : "#cfd9de",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: isDark ? "#71767b" : "#536471",
-              },
-              "& input": {
-                color: isDark ? "white" : "black",
-              },
-            }}
+            isDark={isDark}
           />
 
-          <TextField
+          <CustomTextField
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             label={<FormattedMessage id="auth.password" />}
             type={showPassword ? "text" : "password"}
             fullWidth
             variant="outlined"
+            isDark={isDark}
             slotProps={{
               input: {
                 endAdornment: (
@@ -86,23 +73,6 @@ const LoginForm: React.FC = () => {
                     {showPassword ? <AiFillEye size={20} /> : <AiFillEyeInvisible size={20} />}
                   </div>
                 ),
-              },
-            }}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                "&:hover fieldset": {
-                  borderColor: "#1d9bf0",
-                },
-                "& fieldset": {
-                  borderColor: isDark ? "#333639" : "#cfd9de",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: isDark ? "#71767b" : "#536471",
-              },
-              "& input": {
-                color: isDark ? "white" : "black",
               },
             }}
           />

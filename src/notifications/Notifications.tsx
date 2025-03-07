@@ -9,7 +9,7 @@ import NotificationList from "./components/NotificationList";
 const Notifications: FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { loading } = useSelector((state: RootState) => state.notifications);
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const userId = useSelector((state: RootState) => state.auth.authUser?.id);
 
   useEffect(() => {
     if (userId) {

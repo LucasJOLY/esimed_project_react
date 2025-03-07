@@ -1,4 +1,4 @@
-import { Button, TextField, Typography, LinearProgress } from "@mui/material";
+import { Button, Typography, LinearProgress } from "@mui/material";
 import React, { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
@@ -7,6 +7,7 @@ import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { RootState, AppDispatch } from "../app/store";
 import { toast } from "react-toastify";
 import { FormattedMessage } from "react-intl";
+import CustomTextField from "../components/CustomTextField/CustomTextField";
 import {
   calculatePasswordStrength,
   validatePassword,
@@ -71,66 +72,35 @@ const RegisterForm: React.FC = () => {
           </Typography>
         </div>
         <div className="gap-4 flex flex-col">
-          <TextField
+          <CustomTextField
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             label={<FormattedMessage id="auth.username" />}
             type="text"
             fullWidth
             variant="outlined"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                "&:hover fieldset": {
-                  borderColor: "#1d9bf0",
-                },
-                "& fieldset": {
-                  borderColor: isDark ? "#333639" : "#cfd9de",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: isDark ? "#71767b" : "#536471",
-              },
-              "& input": {
-                color: isDark ? "white" : "black",
-              },
-            }}
+            isDark={isDark}
           />
 
-          <TextField
+          <CustomTextField
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             label={<FormattedMessage id="auth.email" />}
             type="email"
             fullWidth
             variant="outlined"
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                "&:hover fieldset": {
-                  borderColor: "#1d9bf0",
-                },
-                "& fieldset": {
-                  borderColor: isDark ? "#333639" : "#cfd9de",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: isDark ? "#71767b" : "#536471",
-              },
-              "& input": {
-                color: isDark ? "white" : "black",
-              },
-            }}
+            isDark={isDark}
           />
 
           <div>
-            <TextField
+            <CustomTextField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               label={<FormattedMessage id="auth.password" />}
               type={showPassword ? "text" : "password"}
               fullWidth
               variant="outlined"
+              isDark={isDark}
               slotProps={{
                 input: {
                   endAdornment: (
@@ -141,23 +111,6 @@ const RegisterForm: React.FC = () => {
                       {showPassword ? <AiFillEye size={20} /> : <AiFillEyeInvisible size={20} />}
                     </div>
                   ),
-                },
-              }}
-              sx={{
-                "& .MuiOutlinedInput-root": {
-                  backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                  "&:hover fieldset": {
-                    borderColor: "#1d9bf0",
-                  },
-                  "& fieldset": {
-                    borderColor: isDark ? "#333639" : "#cfd9de",
-                  },
-                },
-                "& .MuiInputLabel-root": {
-                  color: isDark ? "#71767b" : "#536471",
-                },
-                "& input": {
-                  color: isDark ? "white" : "black",
                 },
               }}
             />
@@ -187,13 +140,14 @@ const RegisterForm: React.FC = () => {
             )}
           </div>
 
-          <TextField
+          <CustomTextField
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             label={<FormattedMessage id="auth.confirmPassword" />}
             type={showConfirmPassword ? "text" : "password"}
             fullWidth
             variant="outlined"
+            isDark={isDark}
             slotProps={{
               input: {
                 endAdornment: (
@@ -208,23 +162,6 @@ const RegisterForm: React.FC = () => {
                     )}
                   </div>
                 ),
-              },
-            }}
-            sx={{
-              "& .MuiOutlinedInput-root": {
-                backgroundColor: isDark ? "#202327" : "#f7f9f9",
-                "&:hover fieldset": {
-                  borderColor: "#1d9bf0",
-                },
-                "& fieldset": {
-                  borderColor: isDark ? "#333639" : "#cfd9de",
-                },
-              },
-              "& .MuiInputLabel-root": {
-                color: isDark ? "#71767b" : "#536471",
-              },
-              "& input": {
-                color: isDark ? "white" : "black",
               },
             }}
           />

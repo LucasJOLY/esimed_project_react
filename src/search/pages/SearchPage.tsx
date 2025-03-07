@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { searchPostsThunk, clearSearch, orderPosts } from "../store/sliceSearch";
-import PostCard from "../../posts/components/postCard/PostCard";
-import { TextField, CircularProgress, Box, InputAdornment } from "@mui/material";
+import { searchPostsThunk, searchUsersThunk, clearSearch, orderPosts } from "../store/sliceSearch";
 import { RootState } from "../../app/store";
 import { AppDispatch } from "../../app/store";
-import { FormattedMessage } from "react-intl";
-import { useIntl } from "react-intl";
-import { FaSearch } from "react-icons/fa";
-import FilterComponent from "../../posts/components/FilterComponent";
 import { useSearchParams } from "react-router";
+import SearchBar from "../components/SearchBar";
+import SearchTabs from "../components/SearchTabs";
+import SearchContent from "../components/SearchContent";
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") ? "#" + searchParams.get("q") : "";
   const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [activeTab, setActiveTab] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
-  const { searchedPosts, loading } = useSelector((state: RootState) => state.search);
-  const intl = useIntl();
+  const { searchedPosts, searchedUsers, loading } = useSelector((state: RootState) => state.search);
   const isDark = useSelector((state: RootState) => state.theme.isDark);
 
   const [byLikes, setByLikes] = useState(false);
@@ -25,21 +22,29 @@ const SearchPage = () => {
 
   useEffect(() => {
     if (initialQuery) {
-      dispatch(searchPostsThunk({ query: initialQuery }));
+      handleSearch(initialQuery);
     }
   }, [initialQuery]);
 
+  const handleSearch = (query: string) => {
+    if (query.trim()) {
+      if (activeTab === 0) {
+        dispatch(searchPostsThunk({ query }));
+      } else {
+        dispatch(searchUsersThunk({ query }));
+      }
+    } else {
+      dispatch(clearSearch());
+    }
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (searchQuery.trim()) {
-        dispatch(searchPostsThunk({ query: searchQuery }));
-      } else {
-        dispatch(clearSearch());
-      }
+      handleSearch(searchQuery);
     }, 500);
 
     return () => clearTimeout(timeoutId);
-  }, [searchQuery, dispatch]);
+  }, [searchQuery, activeTab]);
 
   useEffect(() => {
     return () => {
@@ -52,70 +57,26 @@ const SearchPage = () => {
     dispatch(orderPosts({ byLikes, byTimeDesc }));
   }, [byLikes, byTimeDesc]);
 
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+    handleSearch(searchQuery);
+  };
+
   return (
     <div className="mx-auto p-4">
-      <TextField
-        fullWidth
-        variant="outlined"
-        placeholder={intl.formatMessage({ id: "search.placeholder" })}
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        sx={{
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 2,
-            backgroundColor: isDark ? "#202327" : "#f7f9f9",
-            "&:hover fieldset": {
-              borderColor: "#1d9bf0",
-            },
-            "& fieldset": {
-              borderColor: isDark ? "#333639" : "#cfd9de",
-            },
-          },
-          "& .MuiInputLabel-root": {
-            color: isDark ? "#71767b" : "#536471",
-          },
-          "& input": {
-            color: isDark ? "white" : "black",
-          },
-        }}
-        // ajoute une icone de recherche
-        slotProps={{
-          input: {
-            startAdornment: (
-              <InputAdornment position="start" sx={{ color: isDark ? "white" : "black" }}>
-                <FaSearch />
-              </InputAdornment>
-            ),
-          },
-        }}
+      <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} isDark={isDark} />
+      <SearchTabs activeTab={activeTab} handleTabChange={handleTabChange} isDark={isDark} />
+      <SearchContent
+        loading={loading}
+        activeTab={activeTab}
+        searchedPosts={searchedPosts}
+        searchedUsers={searchedUsers}
+        searchQuery={searchQuery}
+        byLikes={byLikes}
+        setByLikes={setByLikes}
+        byTimeDesc={byTimeDesc}
+        setByTimeDesc={setByTimeDesc}
       />
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-          <CircularProgress />
-        </Box>
-      ) : (
-        <div className="space-y-4">
-          {searchedPosts.length > 0 && (
-            <div className="flex justify-end items-center mt-4">
-              <FilterComponent
-                filterByLikes={byLikes}
-                setFilterByLikes={setByLikes}
-                filterByTime={byTimeDesc}
-                setFilterByTime={setByTimeDesc}
-              />
-            </div>
-          )}
-          {searchedPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-          {searchedPosts.length === 0 && searchQuery && (
-            <div className="text-center text-gray-500">
-              <FormattedMessage id="toast.searchNotFound" values={{ query: searchQuery }} />
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

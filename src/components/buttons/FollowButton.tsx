@@ -5,7 +5,7 @@ import { RootState, AppDispatch } from "../../app/store";
 import { FormattedMessage } from "react-intl";
 import { User } from "../../auth/types";
 import { followUser, unfollowUser } from "../../profil/store/sliceProfil";
-
+import { Follow } from "../../profil/type";
 interface FollowButtonProps extends ButtonProps {
   actualUser: User;
   setFollowersCount: (count: number) => void;
@@ -19,22 +19,23 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   ...props
 }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
-    console.log(actualUser);
-    setIsFollowing(actualUser.followers.some((user) => user.id === user?.id));
+    setIsFollowing(
+      actualUser.followers.some((followUser: Follow) => followUser.user.id === authUser?.id)
+    );
   }, [actualUser]);
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (isFollowing) {
-      dispatch(unfollowUser({ userId: user?.id || 0, followingId: actualUser.id }));
+      dispatch(unfollowUser({ userId: authUser?.id || 0, followingId: actualUser.id }));
       setFollowersCount(followersCount - 1);
       setIsFollowing(false);
     } else {
-      dispatch(followUser({ userId: user?.id || 0, followingId: actualUser.id }));
+      dispatch(followUser({ userId: authUser?.id || 0, followingId: actualUser.id }));
       setFollowersCount(followersCount + 1);
       setIsFollowing(true);
     }

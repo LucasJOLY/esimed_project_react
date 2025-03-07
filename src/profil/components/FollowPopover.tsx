@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { Avatar, Box, Button, IconButton, Modal, Typography, TextField } from "@mui/material";
+import { Avatar, Box, Button, IconButton, Modal, Typography } from "@mui/material";
 import { FormattedMessage, useIntl } from "react-intl";
 import { IoClose } from "react-icons/io5";
 import { User } from "../../auth/types";
 import { useNavigate } from "react-router";
+import CustomTextField from "../../components/CustomTextField/CustomTextField";
 
 interface FollowPopoverProps {
   open: boolean;
@@ -75,30 +76,13 @@ const FollowPopover: React.FC<FollowPopoverProps> = ({ open, onClose, title, use
           </IconButton>
         </div>
 
-        <TextField
+        <CustomTextField
           fullWidth
           variant="outlined"
           placeholder={intl.formatMessage({ id: "searchUser" })}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 2,
-              backgroundColor: isDark ? "#202327" : "#f7f9f9",
-              "&:hover fieldset": {
-                borderColor: "#1d9bf0",
-              },
-              "& fieldset": {
-                borderColor: isDark ? "#333639" : "#cfd9de",
-              },
-            },
-            "& .MuiInputLabel-root": {
-              color: isDark ? "#71767b" : "#536471",
-            },
-            "& input": {
-              color: isDark ? "white" : "black",
-            },
-          }}
+          isDark={isDark}
         />
 
         <Box
@@ -155,7 +139,9 @@ const FollowPopover: React.FC<FollowPopoverProps> = ({ open, onClose, title, use
                       : "2px solid rgba(0, 0, 0, 0.1)",
                   }}
                 />
-                <Typography>{follow.user.username}</Typography>
+                <div className="flex justify-start items-center text-left">
+                  <Typography>{follow.user.username}</Typography>
+                </div>
               </Box>
             </Button>
           ))}

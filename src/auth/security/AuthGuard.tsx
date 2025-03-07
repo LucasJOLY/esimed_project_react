@@ -13,7 +13,7 @@ const AuthGuard = ({ Component }: { Component: ComponentType }) => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const token = useSelector((state: RootState) => state.auth.token);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
 
   useEffect(() => {
     const verifyAuth = async () => {
@@ -29,7 +29,7 @@ const AuthGuard = ({ Component }: { Component: ComponentType }) => {
           return;
         }
 
-        if (!user) {
+        if (!authUser) {
           try {
             const response = await dispatch(getMe(userId));
             if (!response) {
@@ -45,9 +45,9 @@ const AuthGuard = ({ Component }: { Component: ComponentType }) => {
     };
 
     verifyAuth();
-  }, [token, user]);
+  }, [token, authUser]);
 
-  return user ? <Component /> : null;
+  return authUser ? <Component /> : null;
 };
 
 export default AuthGuard;

@@ -13,7 +13,7 @@ import { FormattedMessage } from "react-intl";
 const ProfileButton = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isDark = useSelector((state: RootState) => state.theme.isDark);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const navigate = useNavigate();
   const dispatchNavigate = useDispatchNavigate();
 
@@ -62,9 +62,7 @@ const ProfileButton = () => {
       >
         <div className="flex items-center gap-3">
           <Avatar sx={{ width: 32, height: 32 }}></Avatar>
-          <Typography sx={{ color: isDark ? "white" : "black" }}>
-            {user?.username}
-          </Typography>
+          <Typography sx={{ color: isDark ? "white" : "black" }}>{authUser?.username}</Typography>
         </div>
         <IconButton
           onClick={handleClick}
@@ -90,11 +88,7 @@ const ProfileButton = () => {
           horizontal: "right",
         }}
       >
-        <div
-          className={`p-2 flex flex-col items-start ${
-            isDark ? "bg-[#16181c]" : "bg-white"
-          }`}
-        >
+        <div className={`p-2 flex flex-col items-start ${isDark ? "bg-[#16181c]" : "bg-white"}`}>
           <Button
             onClick={handleProfile}
             sx={{

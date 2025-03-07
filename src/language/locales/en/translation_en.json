@@ -54,6 +54,7 @@
   "post_number": "{postNumber} posts",
   "post.comments": "{count} comments",
   "feed.myPosts": "My posts",
+  "feed.posts": "Posts",
   "feed.likedPosts": "Liked posts",
   "post_number_liked": "{postNumber} liked posts",
   "no_posts": "No posts found",
@@ -104,5 +105,13 @@
   "toast.searchError": "Error while searching",
   "toast.searchNotFound": "No results found for {query}",
   "nav.search": "Search",
-  "search.placeholder": "Search by keyword, hashtag or username..."
+  "search.placeholder": "Search by keyword, hashtag or username...",
+  "search.posts": "Posts",
+  "search.users": "Users",
+  "toast.usersNotFound": "No users found",
+  "toast.favoritesFetchError": "Error while loading favorites",
+  "toast.favoritesDeletionError": "Error while deleting favorites",
+  "feed.favorites": "Favorites",
+  "post_number_favorites": "{postNumber} favorites posts",
+  "notifications.favoriteMessage": "added your post to their favorites"
 }

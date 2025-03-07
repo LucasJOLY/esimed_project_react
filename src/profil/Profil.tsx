@@ -7,6 +7,7 @@ import { AppDispatch } from "../app/store";
 import { getUserById, resetUserById } from "../auth/store/slice";
 import { CircularProgress } from "@mui/material";
 import { clearPosts, getLikedPostsByUserId, getPostsByUserId } from "../posts/store/slicePost";
+import { fetchFavorites } from "../posts/store/sliceFavorites";
 import ProfileHeader from "./components/ProfileHeader";
 import FollowPopover from "./components/FollowPopover";
 import ProfilePosts from "./components/ProfilePosts";
@@ -15,12 +16,13 @@ function Profil() {
   const { id } = useParams();
   const dispatch = useDispatch<AppDispatch>();
   const [actualUser, setActualUser] = useState({} as User);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const userById = useSelector((state: RootState) => state.auth.userById);
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const posts = useSelector((state: RootState) => state.posts.posts);
+  const favorites = useSelector((state: RootState) => state.favorites.favorites);
   const loadingRepost = useSelector((state: RootState) => state.reposts.repostLoading);
-
+  const loadingFavorites = useSelector((state: RootState) => state.favorites.loading);
   const [byLikes, setByLikes] = useState(false);
   const [byTimeDesc, setByTimeDesc] = useState(true);
 
@@ -34,9 +36,11 @@ function Profil() {
   };
 
   useEffect(() => {
+    setValue(0);
     return () => {
       dispatch(resetUserById());
       dispatch(clearPosts());
+      setValue(0);
     };
   }, []);
 
@@ -46,10 +50,20 @@ function Profil() {
     }
   }, [loadingRepost]);
 
+  useEffect(() => {
+    if (value === 2 && loadingFavorites === "succeeded") {
+      loadFavorites();
+    }
+  }, [loadingFavorites]);
+
+  const loadFavorites = () => {
+    dispatch(fetchFavorites({ userId: actualUser.id, byLikes, byTimeDesc }));
+  };
+
   const [anchorElFollowers, setAnchorElFollowers] = useState<null | HTMLElement>(null);
   const [anchorElFollowing, setAnchorElFollowing] = useState<null | HTMLElement>(null);
   const handleClickFollowers = (event: React.MouseEvent<HTMLElement>) => {
-    if (actualUser.id == user?.id && followerCount > 0) {
+    if (actualUser.id == authUser?.id && followerCount > 0) {
       setAnchorElFollowers(event.currentTarget);
     }
   };
@@ -59,7 +73,7 @@ function Profil() {
   };
 
   const handleClickFollowing = (event: React.MouseEvent<HTMLElement>) => {
-    if (actualUser.id == user?.id && followCount > 0) {
+    if (actualUser.id == authUser?.id && followCount > 0) {
       setAnchorElFollowing(event.currentTarget);
     }
   };
@@ -71,13 +85,13 @@ function Profil() {
   const openFollowers = Boolean(anchorElFollowers);
 
   useEffect(() => {
-    if (user && id && user.id == Number(id)) {
-      dispatch(getUserById(user.id));
+    if (authUser && id && authUser.id == Number(id)) {
+      dispatch(getUserById(authUser.id));
     } else if (id) {
       dispatch(getUserById(Number(id)));
     }
     if (!id) {
-      dispatch(getUserById(user?.id || 0));
+      dispatch(getUserById(authUser?.id || 0));
     }
   }, [id]);
 
@@ -89,20 +103,22 @@ function Profil() {
 
   useEffect(() => {
     getPosts();
-  }, [actualUser]);
+  }, [actualUser, byLikes, byTimeDesc, value]);
 
   const getPosts = () => {
     if (actualUser?.id) {
       if (value === 0) {
         dispatch(getPostsByUserId({ user: actualUser, byLikes, byTimeDesc }));
-      } else {
+      } else if (value === 1) {
         dispatch(
           getLikedPostsByUserId({
             user: actualUser,
-            byLikes: true,
-            byTimeDesc: true,
+            byLikes: byLikes,
+            byTimeDesc: byTimeDesc,
           })
         );
+      } else if (value === 2 && authUser?.id === actualUser.id) {
+        loadFavorites();
       }
     }
   };
@@ -112,16 +128,12 @@ function Profil() {
     setFollowerCount(actualUser?.followers?.length || 0);
   }, [actualUser]);
 
-  useEffect(() => {
-    getPosts();
-  }, [byLikes, byTimeDesc, value]);
-
   return actualUser && actualUser?.id ? (
     <div>
       <div>
         <ProfileHeader
           actualUser={actualUser}
-          user={user}
+          user={authUser}
           isDark={isDark}
           followCount={followCount}
           followerCount={followerCount}
@@ -150,11 +162,14 @@ function Profil() {
           value={value}
           handleChange={handleChange}
           isDark={isDark}
-          posts={posts}
+          posts={value === 2 ? favorites.map((f) => f.post) : posts}
           byLikes={byLikes}
           setByLikes={setByLikes}
           byTimeDesc={byTimeDesc}
           setByTimeDesc={setByTimeDesc}
+          showFavoritesTab={authUser?.id === actualUser.id}
+          authUser={authUser!}
+          currentUser={actualUser}
         />
       </div>
     </div>

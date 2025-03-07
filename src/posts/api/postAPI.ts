@@ -37,7 +37,7 @@ export const createPost = async (
 
 export const getPost = async (postId: number): Promise<Post> => {
   const response = await configAPI.get(
-    `/660/posts/${postId}?_embed=likes&_embed=comments&_embed=reposts&_expand=user`
+    `/660/posts/${postId}?_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user`
   );
   response.data.hashtags = response.data.hashtags || [];
   response.data.mentions = response.data.mentions || [];
@@ -74,14 +74,14 @@ export const getUserPosts = async (
 ): Promise<Post[]> => {
   try {
     const response = await configAPI.get(
-      `/660/posts?userId=${user?.id}&_embed=likes&_embed=comments&_embed=reposts&_expand=user`
+      `/660/posts?userId=${user?.id}&_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user`
     );
     const responseRepost = await configAPI.get(`/660/reposts?userId=${user?.id}&_expand=user`);
     const postRepostedIds: number[] = responseRepost.data.map((repost: Repost) => repost.postId);
     const responsePostReposted = await configAPI.get(
       `/660/posts?id=${postRepostedIds.join(
         "&id="
-      )}&_embed=likes&_embed=comments&_embed=reposts&_expand=user`
+      )}&_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user`
     );
     let repostedPosts: Post[] = [];
     repostedPosts = responsePostReposted.data;
@@ -121,7 +121,7 @@ export const getUserPosts = async (
 export const getPosts = async (byLikes: boolean, byTimeDesc: boolean): Promise<Post[]> => {
   try {
     const response = await configAPI.get(
-      "/660/posts?_sort=created_at&_order=desc&_embed=likes&_embed=comments&_embed=reposts&_expand=user"
+      "/660/posts?_sort=created_at&_order=desc&_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user"
     );
     const posts: Post[] = response.data;
     if (byLikes) {
@@ -159,7 +159,7 @@ export const getLikedPosts = async (
     const postsResponse = await configAPI.get(
       `/660/posts?id=${postIds.join(
         "&id="
-      )}&_embed=likes&_embed=comments&_embed=reposts&_expand=user`
+      )}&_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user`
     );
 
     const posts: Post[] = postsResponse.data;
@@ -189,7 +189,7 @@ export const getFollowedPosts = async (
     const userIds: number[] = [userId, ...followingIds];
     const postsQuery = `/660/posts?${userIds
       .map((id: number) => `userId=${id}`)
-      .join("&")}&_embed=likes&_embed=comments&_embed=reposts&_expand=user`;
+      .join("&")}&_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user`;
     const postsResponse = await configAPI.get(postsQuery);
 
     const repostsQuery = `/660/reposts?${userIds
@@ -203,7 +203,7 @@ export const getFollowedPosts = async (
       const repostedPostsResponse = await configAPI.get(
         `/660/posts?${repostedPostIds
           .map((id: number) => `id=${id}`)
-          .join("&")}&_embed=likes&_embed=comments&_embed=reposts&_expand=user`
+          .join("&")}&_embed=likes&_embed=comments&_embed=reposts&_embed=favorites&_expand=user`
       );
       repostedPosts = repostedPostsResponse.data;
 

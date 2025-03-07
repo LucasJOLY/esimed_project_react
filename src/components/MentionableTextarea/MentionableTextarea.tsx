@@ -20,13 +20,13 @@ const MentionableTextarea: React.FC<MentionableTextareaProps> = ({
   isDark,
   placeholder = "",
 }) => {
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
 
   const mentionableUsers = useMemo(() => {
-    if (!user) return [];
+    if (!authUser) return [];
 
-    const followers: Follow[] = user.followers || [];
-    const following: Follow[] = user.following || [];
+    const followers: Follow[] = authUser.followers || [];
+    const following: Follow[] = authUser.following || [];
 
     return followers
       .filter((follower) =>
@@ -36,7 +36,7 @@ const MentionableTextarea: React.FC<MentionableTextareaProps> = ({
         id: follower.user.id.toString(),
         display: follower.user.username,
       }));
-  }, [user]);
+  }, [authUser]);
 
   const handleChange = (
     event: { target: { value: string } },
@@ -45,7 +45,6 @@ const MentionableTextarea: React.FC<MentionableTextareaProps> = ({
     mentions: Array<{ id: string }>
   ) => {
     onChange(newValue);
-    console.log(mentions);
     if (mentions.length > 0) {
       onMentionsChange(mentions.map((mention) => parseInt(mention.id)));
     }

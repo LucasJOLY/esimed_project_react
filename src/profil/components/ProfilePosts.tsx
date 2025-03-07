@@ -1,9 +1,8 @@
 import React from "react";
-import { Tab, Tabs, Typography } from "@mui/material";
-import { FormattedMessage } from "react-intl";
-import FilterComponent from "../../posts/components/FilterComponent";
-import PostCard from "../../posts/components/postCard/PostCard";
+import { User } from "../../auth/types";
 import { Post } from "../../posts/type";
+import ProfileTabs from "./ProfileTabs";
+import PostsList from "./PostsList";
 
 interface ProfilePostsProps {
   value: number;
@@ -14,6 +13,9 @@ interface ProfilePostsProps {
   setByLikes: (value: boolean) => void;
   byTimeDesc: boolean;
   setByTimeDesc: (value: boolean) => void;
+  showFavoritesTab?: boolean;
+  authUser: User;
+  currentUser: User;
 }
 
 const ProfilePosts: React.FC<ProfilePostsProps> = ({
@@ -25,85 +27,56 @@ const ProfilePosts: React.FC<ProfilePostsProps> = ({
   setByLikes,
   byTimeDesc,
   setByTimeDesc,
+  showFavoritesTab = false,
+  authUser,
+  currentUser,
 }) => {
   return (
     <div>
-      <Tabs
+      <ProfileTabs
         value={value}
-        onChange={handleChange}
-        variant="fullWidth"
-        indicatorColor="secondary"
-      >
-        <Tab
-          label={<FormattedMessage id="feed.myPosts" />}
-          sx={{
-            color: isDark ? "white" : "black",
-            "&.Mui-selected": {
-              color: "#1d9bf0",
-            },
-          }}
-        />
-        <Tab
-          label={<FormattedMessage id="feed.likedPosts" />}
-          sx={{ color: isDark ? "white" : "black" }}
-        />
-      </Tabs>
+        handleChange={handleChange}
+        isDark={isDark}
+        showFavoritesTab={showFavoritesTab}
+        authUser={authUser}
+        currentUser={currentUser}
+      />
 
       {value === 0 && (
-        <>
-          <div className="flex items-center gap-2 justify-between mt-2 mb-2 px-6">
-            <Typography
-              variant="h6"
-              className={` ${isDark ? "text-white" : "text-black"}`}
-            >
-              <FormattedMessage
-                id="post_number"
-                values={{ postNumber: posts.length }}
-              />
-            </Typography>
-            <FilterComponent
-              filterByLikes={byLikes}
-              setFilterByLikes={setByLikes}
-              filterByTime={byTimeDesc}
-              setFilterByTime={setByTimeDesc}
-            />
-          </div>
-          {posts && posts?.length > 0 ? (
-            posts.map((post) => <PostCard key={post.id} post={post} />)
-          ) : (
-            <Typography>
-              <FormattedMessage id="no_posts" />
-            </Typography>
-          )}
-        </>
+        <PostsList
+          isDark={isDark}
+          posts={posts}
+          byLikes={byLikes}
+          setByLikes={setByLikes}
+          byTimeDesc={byTimeDesc}
+          setByTimeDesc={setByTimeDesc}
+          postNumberMessageId="post_number"
+          noPostsMessageId="no_posts"
+        />
       )}
       {value === 1 && (
-        <>
-          <div className="flex items-center gap-2 justify-between mt-2 mb-2 px-6">
-            <Typography
-              variant="h6"
-              className={` ${isDark ? "text-white" : "text-black"}`}
-            >
-              <FormattedMessage
-                id="post_number_liked"
-                values={{ postNumber: posts.length }}
-              />
-            </Typography>
-            <FilterComponent
-              filterByLikes={byLikes}
-              setFilterByLikes={setByLikes}
-              filterByTime={byTimeDesc}
-              setFilterByTime={setByTimeDesc}
-            />
-          </div>
-          {posts && posts?.length > 0 ? (
-            posts.map((post) => <PostCard key={post.id} post={post} />)
-          ) : (
-            <Typography>
-              <FormattedMessage id="no_posts" />
-            </Typography>
-          )}
-        </>
+        <PostsList
+          isDark={isDark}
+          posts={posts}
+          byLikes={byLikes}
+          setByLikes={setByLikes}
+          byTimeDesc={byTimeDesc}
+          setByTimeDesc={setByTimeDesc}
+          postNumberMessageId="post_number_liked"
+          noPostsMessageId="no_posts"
+        />
+      )}
+      {value === 2 && showFavoritesTab && (
+        <PostsList
+          isDark={isDark}
+          posts={posts}
+          byLikes={byLikes}
+          setByLikes={setByLikes}
+          byTimeDesc={byTimeDesc}
+          setByTimeDesc={setByTimeDesc}
+          postNumberMessageId="post_number_favorites"
+          noPostsMessageId="no_favorites"
+        />
       )}
     </div>
   );

@@ -23,7 +23,7 @@ const PostCard = ({ post }: PostCardProps) => {
   const isDark = useSelector((state: RootState) => state.theme.isDark);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
+  const userId = useSelector((state: RootState) => state.auth.authUser?.id);
   const formattedDate = format(new Date(post.created_at), "dd/MM/yyyy HH:mm", {
     locale: fr,
   });
@@ -65,7 +65,10 @@ const PostCard = ({ post }: PostCardProps) => {
 
   return (
     <div
-      onClick={() => navigate(`/feed/${post.id}`)}
+      onClick={(e) => {
+        e.stopPropagation();
+        navigate(`/feed/${post.id}`);
+      }}
       className={`w-full p-4 border-b cursor-pointer ${
         isDark ? "border-[#333639] hover:bg-[#1d1f23]" : "border-gray-200 hover:bg-gray-50"
       }`}

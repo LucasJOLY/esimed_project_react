@@ -48,9 +48,8 @@ export const getUser = async (userId: number): Promise<User> => {
   const user: User = response.data;
   const followers = await configAPI.get(`follows?followingId=${userId}&_expand=user`);
   const following = await configAPI.get(`follows?userId=${userId}`);
-  const followingUsers = await configAPI.get(
-    `users?id=${following.data.map((follow: Follow) => follow.followingId).join(",")}`
-  );
+  const followingIds: number[] = following.data.map((follow: Follow) => follow.followingId);
+  const followingUsers = await configAPI.get(`users?id=${followingIds.join("&id=")}`);
   user.followers = followers.data;
   let followingList: Follow[] = [];
   following.data.forEach((follow: Follow) => {

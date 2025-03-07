@@ -21,7 +21,7 @@ const ExpandableContent = ({
 }: ExpandableContentProps) => {
   const [showFullContent, setShowFullContent] = useState(false);
   const navigate = useNavigate();
-  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const currentUser = useSelector((state: RootState) => state.auth.authUser);
 
   const renderContent = (text: string) => {
     const hashtagRegex = /#[\w\u0590-\u05ff]+/g;

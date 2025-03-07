@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from "../../app/store";
 import { MdOutlineMarkEmailUnread } from "react-icons/md";
 import { MdOutlineMarkEmailRead } from "react-icons/md";
 import { FormattedMessage } from "react-intl";
-import { FaTrash, FaUser } from "react-icons/fa";
+import { FaBookmark, FaTrash, FaUser } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
 import { FaHeart } from "react-icons/fa";
 import { FaComment } from "react-icons/fa";
@@ -61,6 +61,8 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
         return <FaUser size={24} className="text-[#1DA1F2]" />;
       case "mention_comment":
         return <FaComment size={24} className="text-[#1DA1F2]" />;
+      case "favorite":
+        return <FaBookmark size={24} className="text-[#1DA1F2]" />;
       default:
         return null;
     }
@@ -78,6 +80,8 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
         return "notifications.mentionCommentMessage";
       case "mention":
         return "notifications.mentionMessage";
+      case "favorite":
+        return "notifications.favoriteMessage";
       default:
         return "notifications.defaultMessage";
     }
@@ -93,6 +97,9 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
       case "comment":
       case "mention_comment":
       case "mention":
+        navigate(`/feed/${notification.postId}`);
+        break;
+      case "favorite":
         navigate(`/feed/${notification.postId}`);
         break;
       default:
@@ -130,11 +137,16 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
           </div>
           <div className="hidden md:flex gap-1">
             {!notification.read ? (
-              <IconButton onClick={() => dispatch(markNotificationAsRead(notification))}>
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  dispatch(markNotificationAsRead(notification));
+                }}
+              >
                 <MdOutlineMarkEmailUnread size={30} className="mr-1 text-[#1DA1F2]" />
               </IconButton>
             ) : (
-              <IconButton onClick={() => dispatch(markNotificationAsRead(notification))}>
+              <IconButton>
                 <MdOutlineMarkEmailRead size={30} className="mr-1 text-[#1DA1F2]" />
               </IconButton>
             )}
@@ -159,7 +171,10 @@ const NotificationCard: FC<NotificationCardProps> = ({ notification }) => {
         {!notification.read ? (
           <IconButton
             className="h-full !rounded-none px-3 !bg-[#1DA1F2]"
-            onClick={() => dispatch(markNotificationAsRead(notification))}
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(markNotificationAsRead(notification));
+            }}
           >
             <MdOutlineMarkEmailUnread size={30} className="text-white" />
           </IconButton>

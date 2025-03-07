@@ -16,7 +16,7 @@ const AddComment = ({ postId }: { postId: number }) => {
   const [content, setContent] = useState("");
   const [imageUrl, setImageUrl] = useState<string | undefined>();
   const [mentions, setMentions] = useState<number[]>([]);
-  const user = useSelector((state: RootState) => state.auth.user);
+  const authUser = useSelector((state: RootState) => state.auth.authUser);
   const intl = useIntl();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,7 +24,7 @@ const AddComment = ({ postId }: { postId: number }) => {
     dispatch(
       addComment({
         postId,
-        user: user ?? ({} as User),
+        user: authUser ?? ({} as User),
         content,
         imageUrl,
         mentions,

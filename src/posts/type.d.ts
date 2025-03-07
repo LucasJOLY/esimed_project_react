@@ -14,6 +14,7 @@ type Post = {
   likes: Like[];
   comments: Comment[];
   reposts: Repost[];
+  favorites: Favorite[];
   reposted: boolean;
   repostedBy: User;
   imageUrl?: string;
@@ -48,4 +49,12 @@ type Repost = {
   user: User;
 };
 
-export type { Post, Like, Comment, Repost, CommentLikes };
+type Favorite = {
+  id: number;
+  postId: number;
+  userId: number;
+  created_at: number;
+  post: Post;
+};
+
+export type { Post, Like, Comment, Repost, CommentLikes, Favorite };

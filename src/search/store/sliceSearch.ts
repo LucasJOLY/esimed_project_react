@@ -1,11 +1,20 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { searchPosts } from "../api/searchAPI";
+import { searchPosts, searchUsers } from "../api/searchAPI";
 import { Post } from "../../posts/type";
+import { User } from "../../auth/types";
 
 export const searchPostsThunk = createAsyncThunk(
   "search/searchPosts",
   async ({ query }: { query: string }) => {
     const response = await searchPosts(query);
+    return response;
+  }
+);
+
+export const searchUsersThunk = createAsyncThunk(
+  "search/searchUsers",
+  async ({ query }: { query: string }) => {
+    const response = await searchUsers(query);
     return response;
   }
 );
@@ -24,11 +33,13 @@ const sortPosts = (posts: Post[], byLikes: boolean, byTimeDesc: boolean) => {
 
 type SearchState = {
   searchedPosts: Post[];
+  searchedUsers: User[];
   loading: boolean;
 };
 
 const initialState: SearchState = {
   searchedPosts: [],
+  searchedUsers: [],
   loading: false,
 };
 
@@ -38,6 +49,7 @@ const searchSlice = createSlice({
   reducers: {
     clearSearch: (state) => {
       state.searchedPosts = [];
+      state.searchedUsers = [];
       state.loading = false;
     },
     orderPosts: (state, action) => {
@@ -49,18 +61,31 @@ const searchSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(searchPostsThunk.fulfilled, (state, action) => {
-      state.searchedPosts = action.payload;
-      state.loading = false;
-    });
-    builder.addCase(searchPostsThunk.pending, (state) => {
-      state.searchedPosts = [];
-      state.loading = true;
-    });
-    builder.addCase(searchPostsThunk.rejected, (state) => {
-      state.searchedPosts = [];
-      state.loading = false;
-    });
+    builder
+      .addCase(searchPostsThunk.fulfilled, (state, action) => {
+        state.searchedPosts = action.payload;
+        state.loading = false;
+      })
+      .addCase(searchPostsThunk.pending, (state) => {
+        state.searchedPosts = [];
+        state.loading = true;
+      })
+      .addCase(searchPostsThunk.rejected, (state) => {
+        state.searchedPosts = [];
+        state.loading = false;
+      })
+      .addCase(searchUsersThunk.fulfilled, (state, action) => {
+        state.searchedUsers = action.payload;
+        state.loading = false;
+      })
+      .addCase(searchUsersThunk.pending, (state) => {
+        state.searchedUsers = [];
+        state.loading = true;
+      })
+      .addCase(searchUsersThunk.rejected, (state) => {
+        state.searchedUsers = [];
+        state.loading = false;
+      });
   },
 });
 
